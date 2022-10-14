@@ -14,9 +14,9 @@ namespace Engine {
 		glewInit();
 	}
 
-	void RendererUtils::setClearColor()
+	void RendererUtils::setClearColor(const glm::vec4& color)
 	{
-		glClearColor(1.0, 0.0, 1.0, 1.0);
+		glClearColor(color.r, color.g, color.b, color.a);
 	}
 
 	void RendererUtils::setDisplayFunc(draw_func_t func)

@@ -16,7 +16,7 @@ namespace Engine {
 		typedef void (*draw_func_t)(void);
 
 		static void init(int& argc, char** argv, int width, int height, int pos_x, int pos_y, const std::string& title);
-		static void setClearColor();
+		static void setClearColor(const glm::vec4& color);
 		static void setDisplayFunc(draw_func_t func);
 		static void startMainLoop();
 		static void swapBuffers();

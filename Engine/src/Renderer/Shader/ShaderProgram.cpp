@@ -34,6 +34,12 @@ namespace Engine {
 		glUseProgram(0);
 	}
 
+	void ShaderProgram::uploadUniformMat4(std::string name, glm::mat4 mat)
+	{
+		auto location = glGetUniformLocation(id, name.c_str());
+		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(mat));
+	}
+
 	uint32_t ShaderProgram::compileShader(std::string path, ShaderType type)
 	{
 		std::string source = File::readAllAsString(path);

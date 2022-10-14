@@ -13,7 +13,7 @@ std::shared_ptr<Engine::VertexArray> vao;
 
 void init_vao(std::vector<float>& vertices, std::vector<uint32_t>& indices) {
 	vao = std::make_shared<Engine::VertexArray>();
-	auto vbo_obj = Engine::VertexBuffer::createStatic(vertices.data(), vertices.size() * sizeof(float));
+	auto vbo_obj = Engine::VertexBuffer::createStatic(vertices);
 	auto vertex_vbo = std::make_shared<Engine::VertexBuffer>(std::move(vbo_obj));
 	auto indices_vbo = std::make_shared<Engine::IndexBuffer>(indices.data(), indices.size());
 
@@ -57,6 +57,7 @@ void generate_circle(float center_x, float center_y, float radius, int n_points,
 
 void drawScene() {
 	Engine::RendererUtils::clear(Engine::ClearOptions::ColorBuffer);
+	Engine::RendererUtils::setPolygonModeDebug();
 	Engine::RendererUtils::drawIndexed(vao);
 	Engine::RendererUtils::swapBuffers();
 }
@@ -65,7 +66,7 @@ int main(int argc, char** argv)
 {
 	Engine::RendererUtils::init(argc, argv, 800, 800, 100, 100, "Circle");
 	Engine::RendererUtils::setDisplayFunc(drawScene);
-	Engine::RendererUtils::setClearColor();
+	Engine::RendererUtils::setClearColor(glm::vec4(0.0, 0.0, 0.0, 1.0));
 
 	auto shader_program = Engine::ShaderProgram(
 		"..\\Circle\\shaders\\vertexShader.glsl",

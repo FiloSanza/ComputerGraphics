@@ -14,10 +14,13 @@ namespace Engine {
 	class ShaderProgram
 	{
 	public:
+		ShaderProgram() {}
 		ShaderProgram(std::string vertex_shader_path, std::string fragment_shader_path);
 
 		void bind() const;
 		void unbind() const;
+
+		void uploadUniformMat4(std::string name, glm::mat4 mat);
 	private:
 		static uint32_t compileShader(std::string path, ShaderType type);
 		static uint32_t getShaderTypeValue(ShaderType type);
