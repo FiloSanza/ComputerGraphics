@@ -9,11 +9,12 @@
 float vertices[] = {
 	-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
 	0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-	0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f
+	-0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
+	0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f
 };
 
 uint32_t indices[] = {
-	0, 1, 2
+	0, 1, 2, 1, 2, 3
 };
 
 std::shared_ptr<Engine::VertexArray> vao;
@@ -22,7 +23,7 @@ void init_vao() {
 	vao = std::make_shared<Engine::VertexArray>();
 	auto vbo_obj = Engine::VertexBuffer::createStatic(vertices, sizeof(vertices));
 	auto vertex_vbo = std::make_shared<Engine::VertexBuffer>(std::move(vbo_obj));
-	auto indices_vbo = std::make_shared<Engine::IndexBuffer>(indices, 3);
+	auto indices_vbo = std::make_shared<Engine::IndexBuffer>(indices, sizeof(indices) / sizeof(uint32_t));
 
 	Engine::BufferLayout layout = {
 		{ "Position", Engine::ShaderDataType::Float3 },
@@ -36,6 +37,7 @@ void init_vao() {
 
 void drawScene() {
 	Engine::RendererUtils::clear(Engine::ClearOptions::ColorBuffer);
+	//Engine::RendererUtils::setPolygonModeDebug();
 	Engine::RendererUtils::drawIndexed(vao);
 	Engine::RendererUtils::swapBuffers();
 }

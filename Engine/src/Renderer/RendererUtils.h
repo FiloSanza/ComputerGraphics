@@ -23,6 +23,7 @@ namespace Engine {
 		static void clear(int mask);
 		static void drawLines(const std::shared_ptr<VertexArray> vertex_array, uint32_t vertex_count);
 		static void drawIndexed(const std::shared_ptr<VertexArray> vertex_array, uint32_t index_count = 0);
+		static void setPolygonModeDebug();
 	};
 
 }

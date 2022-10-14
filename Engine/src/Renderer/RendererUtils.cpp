@@ -53,4 +53,9 @@ namespace Engine {
 		uint32_t count = index_count ? index_count : index_buffer->getCount();
 		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
 	}
+
+	void RendererUtils::setPolygonModeDebug()
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	}
 }
