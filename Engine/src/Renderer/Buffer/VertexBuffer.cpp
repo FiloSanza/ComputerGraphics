@@ -7,12 +7,24 @@ namespace Engine {
 		glGenBuffers(1, &id);
 		glBindBuffer(GL_ARRAY_BUFFER, id);
 		glBufferData(
-			GL_ARRAY_BUFFER, 
-			vertices.size() * sizeof(float), 
-			vertices.data(), 
+			GL_ARRAY_BUFFER,
+			vertices.size() * sizeof(float),
+			vertices.data(),
 			GL_STATIC_DRAW
 		);
-	}	
+	}
+
+	VertexBuffer::VertexBuffer(std::vector<glm::vec3> vertices, uint32_t mode)
+	{
+		glGenBuffers(1, &id);
+		glBindBuffer(GL_ARRAY_BUFFER, id);
+		glBufferData(
+			GL_ARRAY_BUFFER,
+			vertices.size() * sizeof(float) * 3,
+			glm::value_ptr(vertices.front()),
+			GL_STATIC_DRAW
+		);
+	}
 	
 	void VertexBuffer::bind() const
 	{
@@ -35,6 +47,11 @@ namespace Engine {
 	}
 
 	VertexBuffer VertexBuffer::createStatic(std::vector<float> vertices)
+	{
+		return VertexBuffer(vertices, GL_STATIC_DRAW);
+	}
+
+	VertexBuffer VertexBuffer::createStatic(std::vector<glm::vec3> vertices)
 	{
 		return VertexBuffer(vertices, GL_STATIC_DRAW);
 	}

@@ -1,16 +1,20 @@
 #include "Object.h"
 
+#include "../RendererUtils.h"
+
 namespace Engine {
 	Object2D::Object2D(
+		const std::shared_ptr<ShaderProgram> shader_program,
 		const std::vector<std::shared_ptr<VertexBuffer>>& buffers,
 		std::shared_ptr<IndexBuffer> idx_buffer,
 		glm::mat4 model_matrix, 
 		glm::mat4 projection_matrix
-	) : model_matrix_updated(true), projection_matrix_updated(true)
+	) : model_matrix_updated(true), 
+		projection_matrix_updated(true), 
+		shader_program(shader_program), 
+		model_matrix(model_matrix), 
+		projection_matrix(projection_matrix)
 	{
-		this->model_matrix = model_matrix;
-		this->projection_matrix = projection_matrix;
-
 		vertex_array = std::make_shared<VertexArray>();
 		vertex_array->setIndexBuffer(idx_buffer);
 
@@ -21,6 +25,17 @@ namespace Engine {
 
 	void Object2D::draw()
 	{
+		if (model_matrix_updated) {
+			shader_program->uploadUniformMat4("Model", model_matrix);
+			model_matrix_updated = false;
+		}
+		
+		if (projection_matrix_updated) {
+			shader_program->uploadUniformMat4("Model", projection_matrix);
+			projection_matrix_updated = false;
+		}
+
+		RendererUtils::drawIndexed(vertex_array);
 	}
 
 	void Object2D::setModelMatrix(glm::mat4 matrix)

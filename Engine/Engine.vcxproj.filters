@@ -48,6 +48,9 @@
     <ClInclude Include="src\Renderer\Buffer\IndexBuffer.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="src\Renderer\Objects\Object.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Renderer\Buffer\VertexBuffer.cpp">
@@ -69,6 +72,9 @@
       <Filter>File di origine</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\Buffer\DataTypes.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\Objects\Object.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
   </ItemGroup>
