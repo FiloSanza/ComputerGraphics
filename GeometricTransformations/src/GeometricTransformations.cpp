@@ -50,8 +50,8 @@ int main(int argc, char** argv)
 	Engine::RendererUtils::setClearColor(glm::vec4(0.0, 0.0, 0.0, 1.0));
 
 	shader_program = Engine::ShaderProgram(
-		"..\\Triangle\\shaders\\vertexShader.glsl",
-		"..\\Triangle\\shaders\\fragmentShader.glsl"
+		"..\\GeometricTransformations\\shaders\\vertexShader.glsl",
+		"..\\GeometricTransformations\\shaders\\fragmentShader.glsl"
 	);
 
 	shader_program.bind();

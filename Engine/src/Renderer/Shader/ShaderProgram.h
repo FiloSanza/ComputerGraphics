@@ -14,7 +14,7 @@ namespace Engine {
 	class ShaderProgram
 	{
 	public:
-		ShaderProgram() {}
+		ShaderProgram(): id(0) {}
 		ShaderProgram(std::string vertex_shader_path, std::string fragment_shader_path);
 
 		void bind() const;
