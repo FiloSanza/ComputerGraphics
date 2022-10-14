@@ -22,5 +22,6 @@
   <ItemGroup>
     <None Include="shaders\fragmentShader.glsl" />
     <None Include="shaders\vertexShader.glsl" />
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
