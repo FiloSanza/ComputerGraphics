@@ -6,14 +6,16 @@
 #include "Engine/src/Renderer/Buffer/DataTypes.h"
 #include "Engine/src/Exceptions/ShaderLoadException.h"
 #include "Engine/src/Renderer/Objects/Object.h"
+#include "Engine/src/Renderer/Objects/Scene.h"
 
 const float PI = 3.14159265359f;
 const float TWO_PI = 2 * PI;
 
 std::vector<Engine::Object2D> objects;
 std::shared_ptr<Engine::ShaderProgram> shader_program;
+Engine::Scene scene;
 
-Engine::Object2D create_circle_obj(std::vector<glm::vec3>& vertices, std::vector<uint32_t>& indices) {
+std::shared_ptr<Engine::Object2D> create_circle_obj(std::vector<glm::vec3>& vertices, std::vector<uint32_t>& indices) {
 	auto vbo_obj = Engine::VertexBuffer::createStatic(vertices);
 	auto vertex_vbo = std::make_shared<Engine::VertexBuffer>(std::move(vbo_obj));
 	auto indices_vbo = std::make_shared<Engine::IndexBuffer>(indices.data(), indices.size());
@@ -24,7 +26,9 @@ Engine::Object2D create_circle_obj(std::vector<glm::vec3>& vertices, std::vector
 
 	vertex_vbo->setLayout(layout);
 
-	return Engine::Object2D(shader_program, { vertex_vbo }, indices_vbo, glm::mat4(), glm::mat4());
+	auto obj = Engine::Object2D({ vertex_vbo }, indices_vbo, glm::mat4(), glm::mat4());
+
+	return std::make_shared<Engine::Object2D>(std::move(obj));
 }
 
 void generate_circle(float center_x, float center_y, float radius, int n_points, std::vector<glm::vec3>& vertices, std::vector<uint32_t>& indices) {
@@ -53,9 +57,7 @@ void generate_circle(float center_x, float center_y, float radius, int n_points,
 
 void drawScene() {
 	Engine::RendererUtils::clear(Engine::ClearOptions::ColorBuffer);
-	for (auto& obj : objects) {
-		obj.draw();
-	}
+	scene.draw();
 	Engine::RendererUtils::swapBuffers();
 }
 
@@ -76,7 +78,7 @@ int main(int argc, char** argv)
 	generate_circle(0, 0, 0.5, 50, vertices, indices);
 
 	shader_program->bind();
-	objects.push_back(create_circle_obj(vertices, indices));
+	scene = Engine::Scene(shader_program, { create_circle_obj(vertices, indices) });
 
 	Engine::RendererUtils::startMainLoop();
 }
