@@ -4,7 +4,7 @@
 
 namespace Engine {
 	Object2D::Object2D(
-		const std::vector<std::shared_ptr<VertexBuffer>>& buffers,
+		const std::initializer_list<std::shared_ptr<VertexBuffer>>& buffers,
 		std::shared_ptr<IndexBuffer> idx_buffer,
 		glm::mat4 model_matrix, 
 		glm::mat4 projection_matrix
