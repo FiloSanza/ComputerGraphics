@@ -4,14 +4,12 @@
 
 namespace Engine {
 	Object2D::Object2D(
-		const std::shared_ptr<ShaderProgram> shader_program,
 		const std::vector<std::shared_ptr<VertexBuffer>>& buffers,
 		std::shared_ptr<IndexBuffer> idx_buffer,
 		glm::mat4 model_matrix, 
 		glm::mat4 projection_matrix
 	) : model_matrix_updated(true), 
 		projection_matrix_updated(true), 
-		shader_program(shader_program), 
 		model_matrix(model_matrix), 
 		projection_matrix(projection_matrix)
 	{
@@ -25,16 +23,6 @@ namespace Engine {
 
 	void Object2D::draw()
 	{
-		if (model_matrix_updated) {
-			shader_program->uploadUniformMat4("Model", model_matrix);
-			model_matrix_updated = false;
-		}
-		
-		if (projection_matrix_updated) {
-			shader_program->uploadUniformMat4("Model", projection_matrix);
-			projection_matrix_updated = false;
-		}
-
 		RendererUtils::drawIndexed(vertex_array);
 	}
 
@@ -50,6 +38,16 @@ namespace Engine {
 		projection_matrix = matrix;
 	}
 
+	void Object2D::setModelMatrixUpdated() 
+	{
+		model_matrix_updated = false;
+	}
+
+	void Object2D::setProjectionMatrixUpdated()
+	{
+		projection_matrix_updated = false;
+	}
+
 	glm::mat4 Object2D::getModelMatrix() const
 	{
 		return model_matrix;
@@ -58,6 +56,16 @@ namespace Engine {
 	glm::mat4 Object2D::getProjectionMatrix() const
 	{
 		return projection_matrix;
+	}
+
+	bool Object2D::needToUpdateModelMatrix() const
+	{
+		return model_matrix_updated;
+	}
+
+	bool Object2D::needToUpdateProjectionMatrix() const
+	{
+		return projection_matrix_updated;
 	}
 
 
