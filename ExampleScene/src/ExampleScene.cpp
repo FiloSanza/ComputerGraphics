@@ -7,6 +7,9 @@
 #include "Engine/src/Exceptions/ShaderLoadException.h"
 #include "Engine/src/Renderer/Objects/Object.h"
 #include "Engine/src/Renderer/Objects/Scene.h"
+#include "Engine/src/Utils/Window.h"
+#include "Engine/src/Events/EventsDispatcher.h"
+#include "Engine/src/Events/Event.h"
 
 const float PI = 3.14159265359f;
 const float TWO_PI = 2 * PI;
@@ -112,10 +115,16 @@ std::shared_ptr<Engine::Object2D> create_moutains(float start, float end, float 
 
 int main(int argc, char** argv)
 {
-	Engine::RendererUtils::init(argc, argv, 800, 800, 100, 100, "ExampleScene");
+	Engine::RendererUtils::init(argc, argv);
+	Engine::Window window("ExampleScene", 800, 800);
 	Engine::RendererUtils::setDisplayFunc(drawScene);
 	Engine::RendererUtils::setClearColor(glm::vec4(0.0, 0.0, 0.0, 1.0));
 	Engine::RendererUtils::enableBlend();
+
+	Engine::EventsDispatcher::getInstance().registerCallback(Engine::EventType::KeyPressed, [](const Engine::Event& evt) {
+		std::cout << "Key " << (unsigned char)evt.getKey() << " pressed.\n";
+		return true;
+	});
 
 	shader_program = std::make_shared<Engine::ShaderProgram>(
 		"..\\ExampleScene\\shaders\\vertexShader.glsl",

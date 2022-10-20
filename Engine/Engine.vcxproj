@@ -139,6 +139,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="src\Events\Event.h" />
+    <ClInclude Include="src\Events\EventsDispatcher.h" />
     <ClInclude Include="src\Exceptions\ShaderLoadException.h" />
     <ClInclude Include="src\lib.h" />
     <ClInclude Include="src\Renderer\Buffer\BufferElement.h" />
@@ -152,8 +154,11 @@
     <ClInclude Include="src\Renderer\RendererUtils.h" />
     <ClInclude Include="src\Renderer\Shader\ShaderProgram.h" />
     <ClInclude Include="src\Utils\Files.h" />
+    <ClInclude Include="src\Utils\Key.h" />
+    <ClInclude Include="src\Utils\Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="src\Events\EventsDispatcher.cpp" />
     <ClCompile Include="src\Renderer\Buffer\DataTypes.cpp" />
     <ClCompile Include="src\Renderer\Buffer\IndexBuffer.cpp" />
     <ClCompile Include="src\Renderer\Buffer\VertexArray.cpp" />
@@ -163,6 +168,7 @@
     <ClCompile Include="src\Renderer\RendererUtils.cpp" />
     <ClCompile Include="src\Renderer\Shader\ShaderProgram.cpp" />
     <ClCompile Include="src\Utils\Files.cpp" />
+    <ClCompile Include="src\Utils\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

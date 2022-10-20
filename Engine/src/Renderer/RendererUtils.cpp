@@ -1,17 +1,13 @@
 #include "RendererUtils.h"
 
 namespace Engine {
-	void RendererUtils::init(int& argc, char** argv, int width, int height, int pos_x, int pos_y, const std::string& title)
+	void RendererUtils::init(int& argc, char** argv)
 	{
 		glutInit(&argc, argv);
 		glutInitContextVersion(4, 0);
 		glutInitContextProfile(GLUT_CORE_PROFILE);
 		glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
 		glewExperimental = GL_TRUE;
-		glutInitWindowSize(width, height);
-		glutInitWindowPosition(pos_x, pos_y);
-		glutCreateWindow(title.c_str());
-		glewInit();
 	}
 
 	void RendererUtils::setClearColor(const glm::vec4& color)

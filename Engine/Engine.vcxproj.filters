@@ -54,6 +54,18 @@
     <ClInclude Include="src\Renderer\Objects\Scene.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="src\Utils\Key.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Events\Event.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Events\EventsDispatcher.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
+    <ClInclude Include="src\Utils\Window.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Renderer\Buffer\VertexBuffer.cpp">
@@ -81,6 +93,12 @@
       <Filter>File di origine</Filter>
     </ClCompile>
     <ClCompile Include="src\Renderer\Objects\Scene.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Events\EventsDispatcher.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Utils\Window.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
   </ItemGroup>
