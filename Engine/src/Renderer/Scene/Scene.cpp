@@ -4,10 +4,10 @@ namespace Engine {
 	Scene::Scene(std::shared_ptr<ShaderProgram> program) 
 		: program(program), objects({}) {}
 	
-	Scene::Scene(std::shared_ptr<ShaderProgram> program, std::initializer_list<std::shared_ptr<Object2D>> objects)
+	Scene::Scene(std::shared_ptr<ShaderProgram> program, std::initializer_list<std::shared_ptr<Entity>> objects)
 		: program(program), objects(objects) {}
 	
-	void Scene::addObject(std::shared_ptr<Object2D> object) {
+	void Scene::addObject(std::shared_ptr<Entity> object) {
 		objects.push_back(object);
 	}
 	

@@ -3,19 +3,43 @@
 #include <string>
 
 namespace Engine {
+	using EnabledWindowEvents = uint32_t;
+
+	enum WindowEvent : uint32_t {
+		None			= 0,
+		KeyPress		= 1,
+		MouseClick		= 1 << 2,
+		MouseMovement	= 1 << 3
+	};
+
+	struct WindowOptions {
+	public:
+		std::string title;
+		int height;
+		int width;
+
+		void enableEvent(WindowEvent event) {
+			events |= (uint32_t)event;
+		}
+
+		bool isEventEnabled(WindowEvent event) {
+			return events & ((uint32_t)event);
+		}
+
+	private:
+		EnabledWindowEvents events = WindowEvent::None;
+	};
 
 	class Window {
 	public:
-		Window(const char* title, int height, int width);
+		Window(WindowOptions options);
 		~Window();
 
 	private:
 		void init();
 
-		std::string title;
 		int id;
-		int height;
-		int width;
+		WindowOptions options;
 	};
 
 };

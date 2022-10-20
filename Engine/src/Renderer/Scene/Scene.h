@@ -2,7 +2,7 @@
 
 #include <vector>
 #include <memory>
-#include "Object.h"
+#include "Entity.h"
 #include "../Shader/ShaderProgram.h"
 
 namespace Engine {
@@ -10,13 +10,13 @@ namespace Engine {
 	public:
 		Scene() {}
 		Scene(std::shared_ptr<ShaderProgram> program);
-		Scene(std::shared_ptr<ShaderProgram> program, std::initializer_list<std::shared_ptr<Object2D>> objects);
+		Scene(std::shared_ptr<ShaderProgram> program, std::initializer_list<std::shared_ptr<Entity>> objects);
 
-		void addObject(std::shared_ptr<Object2D> object);
+		void addObject(std::shared_ptr<Entity> object);
 		void draw();
 
 	private:
 		std::shared_ptr<ShaderProgram> program;
-		std::vector<std::shared_ptr<Object2D>> objects;
+		std::vector<std::shared_ptr<Entity>> objects;
 	};
 }

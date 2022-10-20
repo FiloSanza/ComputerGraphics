@@ -8,12 +8,12 @@
 
 namespace Engine {
 	
-	using EventCallback = std::function<bool(Event)>;
+	using EventCallback = std::function<void(const Event&)>;
 
 	class EventsDispatcher {
 	public:
 		void registerCallback(EventType type, EventCallback function);
-		void dipatch(Event event);
+		void dispatch(Event event);
 		
 		static EventsDispatcher& getInstance();
 	private:

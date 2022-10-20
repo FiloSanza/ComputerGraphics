@@ -15,4 +15,10 @@ namespace Engine {
 	uint32_t ShaderDataTypeToGLType(ShaderDataType shader_type);
 
 	uint32_t GetShaderDataTypeSize(ShaderDataType type);
+
+	struct Vertex {
+		glm::vec3 position;
+		glm::vec4 color;
+	};
+
 }

@@ -173,7 +173,6 @@ int main(int argc, char** argv)
 	scene.addObject(create_moutains(
 		-1, 1, 0.2, 0.5, 3.0, glm::vec4(0.5, 0.27, 0.0, 1.0), 100
 	));
-
 	shader_program->bind();
 	Engine::RendererUtils::startMainLoop();
 }

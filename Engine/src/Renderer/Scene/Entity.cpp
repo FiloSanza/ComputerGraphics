@@ -1,9 +1,9 @@
-#include "Object.h"
+#include "Entity.h"
 
 #include "../RendererUtils.h"
 
 namespace Engine {
-	Object2D::Object2D(
+	Entity::Entity(
 		const std::initializer_list<std::shared_ptr<VertexBuffer>>& buffers,
 		std::shared_ptr<IndexBuffer> idx_buffer,
 		glm::mat4 model_matrix, 
@@ -21,49 +21,49 @@ namespace Engine {
 		}
 	}
 
-	void Object2D::draw()
+	void Entity::draw()
 	{
 		RendererUtils::drawIndexed(vertex_array);
 	}
 
-	void Object2D::setModelMatrix(glm::mat4 matrix)
+	void Entity::setModelMatrix(glm::mat4 matrix)
 	{
 		model_matrix_updated = true;
 		model_matrix = matrix;
 	}
 
-	void Object2D::setProjectionMatrix(glm::mat4 matrix)
+	void Entity::setProjectionMatrix(glm::mat4 matrix)
 	{
 		projection_matrix_updated = true;
 		projection_matrix = matrix;
 	}
 
-	void Object2D::setModelMatrixUpdated() 
+	void Entity::setModelMatrixUpdated() 
 	{
 		model_matrix_updated = false;
 	}
 
-	void Object2D::setProjectionMatrixUpdated()
+	void Entity::setProjectionMatrixUpdated()
 	{
 		projection_matrix_updated = false;
 	}
 
-	glm::mat4 Object2D::getModelMatrix() const
+	glm::mat4 Entity::getModelMatrix() const
 	{
 		return model_matrix;
 	}
 
-	glm::mat4 Object2D::getProjectionMatrix() const
+	glm::mat4 Entity::getProjectionMatrix() const
 	{
 		return projection_matrix;
 	}
 
-	bool Object2D::needToUpdateModelMatrix() const
+	bool Entity::needToUpdateModelMatrix() const
 	{
 		return model_matrix_updated;
 	}
 
-	bool Object2D::needToUpdateProjectionMatrix() const
+	bool Entity::needToUpdateProjectionMatrix() const
 	{
 		return projection_matrix_updated;
 	}

@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "BufferLayout.h"
+#include "DataTypes.h"
 #include "../../lib.h"
 
 namespace Engine {
@@ -11,6 +12,7 @@ namespace Engine {
 		VertexBuffer() = delete;
 		VertexBuffer(std::vector<float> vertices, uint32_t mode);
 		VertexBuffer(std::vector<glm::vec3> vertices, uint32_t mode);
+		VertexBuffer(std::vector<Vertex> vertices, uint32_t mode);
 
 		~VertexBuffer() = default;
 
@@ -22,6 +24,7 @@ namespace Engine {
 
 		static VertexBuffer createStatic(std::vector<float> vertices);
 		static VertexBuffer createStatic(std::vector<glm::vec3> vertices);
+		static VertexBuffer createStatic(std::vector<Vertex> vertices);
 	private:
 
 		uint32_t id;

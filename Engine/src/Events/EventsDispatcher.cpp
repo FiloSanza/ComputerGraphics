@@ -9,7 +9,7 @@ namespace Engine {
 		callbacks[type].push_back(function);
 	}
 	
-	void EventsDispatcher::dipatch(Event event)
+	void EventsDispatcher::dispatch(Event event)
 	{
 		std::for_each(callbacks[event.getType()].begin(), callbacks[event.getType()].end(), 
 			[event](const EventCallback& callback) {

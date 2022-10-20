@@ -9,9 +9,10 @@
 #include "../Shader/ShaderProgram.h"
 
 namespace Engine {
-	class Object2D {
+
+	class Entity {
 	public:
-		Object2D(
+		Entity(
 			const std::initializer_list<std::shared_ptr<VertexBuffer>>& buffers,
 			std::shared_ptr<IndexBuffer> index_buffer,
 			glm::mat4 model_matrix, 

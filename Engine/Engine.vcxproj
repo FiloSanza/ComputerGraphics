@@ -149,12 +149,12 @@
     <ClInclude Include="src\Renderer\Buffer\IndexBuffer.h" />
     <ClInclude Include="src\Renderer\Buffer\VertexArray.h" />
     <ClInclude Include="src\Renderer\Buffer\VertexBuffer.h" />
-    <ClInclude Include="src\Renderer\Objects\Object.h" />
-    <ClInclude Include="src\Renderer\Objects\Scene.h" />
+    <ClInclude Include="src\Renderer\Scene\Entity.h" />
+    <ClInclude Include="src\Renderer\Scene\Scene.h" />
     <ClInclude Include="src\Renderer\RendererUtils.h" />
     <ClInclude Include="src\Renderer\Shader\ShaderProgram.h" />
     <ClInclude Include="src\Utils\Files.h" />
-    <ClInclude Include="src\Utils\Key.h" />
+    <ClInclude Include="src\Utils\Input.h" />
     <ClInclude Include="src\Utils\Window.h" />
   </ItemGroup>
   <ItemGroup>
@@ -163,8 +163,8 @@
     <ClCompile Include="src\Renderer\Buffer\IndexBuffer.cpp" />
     <ClCompile Include="src\Renderer\Buffer\VertexArray.cpp" />
     <ClCompile Include="src\Renderer\Buffer\VertexBuffer.cpp" />
-    <ClCompile Include="src\Renderer\Objects\Object.cpp" />
-    <ClCompile Include="src\Renderer\Objects\Scene.cpp" />
+    <ClCompile Include="src\Renderer\Scene\Entity.cpp" />
+    <ClCompile Include="src\Renderer\Scene\Scene.cpp" />
     <ClCompile Include="src\Renderer\RendererUtils.cpp" />
     <ClCompile Include="src\Renderer\Shader\ShaderProgram.cpp" />
     <ClCompile Include="src\Utils\Files.cpp" />
