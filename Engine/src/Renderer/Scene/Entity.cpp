@@ -8,13 +8,13 @@ namespace Engine {
 		std::shared_ptr<IndexBuffer> index_buffer,
 		DrawMode draw_mode,
 		bool is_indexed,
-		glm::mat4 model_matrix,
+		ModelMatrixHandler model_matrix,
 		glm::mat4 projection_matrix
 	) : model_matrix_updated(true),
 		projection_matrix_updated(true),
 		draw_mode(draw_mode),
 		is_indexed(is_indexed),
-		model_matrix(model_matrix), 
+		model_matrix(std::make_shared<ModelMatrixHandler>(std::move(model_matrix))), 
 		projection_matrix(projection_matrix)
 	{
 		vertex_array = std::make_shared<VertexArray>();
@@ -30,13 +30,13 @@ namespace Engine {
 		uint32_t vertex_count,
 		DrawMode draw_mode, 
 		bool is_indexed, 
-		glm::mat4 model_matrix, 
+		ModelMatrixHandler model_matrix,
 		glm::mat4 projection_matrix
 	) : model_matrix_updated(true),
 		projection_matrix_updated(true),
 		draw_mode(draw_mode),
 		is_indexed(is_indexed),
-		model_matrix(model_matrix),
+		model_matrix(std::make_shared<ModelMatrixHandler>(std::move(model_matrix))), 
 		projection_matrix(projection_matrix)
 	{
 		vertex_array = std::make_shared<VertexArray>();
@@ -57,21 +57,10 @@ namespace Engine {
 		}
 	}
 
-	void Entity::setModelMatrix(glm::mat4 matrix)
-	{
-		model_matrix_updated = true;
-		model_matrix = matrix;
-	}
-
 	void Entity::setProjectionMatrix(glm::mat4 matrix)
 	{
 		projection_matrix_updated = true;
 		projection_matrix = matrix;
-	}
-
-	void Entity::setModelMatrixUpdated() 
-	{
-		model_matrix_updated = false;
 	}
 
 	void Entity::setProjectionMatrixUpdated()
@@ -79,19 +68,19 @@ namespace Engine {
 		projection_matrix_updated = false;
 	}
 
-	glm::mat4 Entity::getModelMatrix() const
+	std::shared_ptr<ModelMatrixHandler> Entity::getModelMatrixHandler()
 	{
 		return model_matrix;
+	}
+
+	glm::mat4 Entity::getModelMatrix()
+	{
+		return model_matrix->getModelMatrix();
 	}
 
 	glm::mat4 Entity::getProjectionMatrix() const
 	{
 		return projection_matrix;
-	}
-
-	bool Entity::needToUpdateModelMatrix() const
-	{
-		return model_matrix_updated;
 	}
 
 	bool Entity::needToUpdateProjectionMatrix() const
@@ -103,7 +92,7 @@ namespace Engine {
 		const std::initializer_list<std::shared_ptr<VertexBuffer>>& buffers, 
 		uint32_t vertex_count,
 		DrawMode draw_mode, 
-		glm::mat4 model_matrix,
+		ModelMatrixHandler model_matrix,
 		glm::mat4 projection_matrix
 	) {
 		return Entity(buffers, vertex_count, draw_mode, false, model_matrix, projection_matrix);
@@ -113,11 +102,36 @@ namespace Engine {
 		const std::initializer_list<std::shared_ptr<VertexBuffer>>& buffers, 
 		std::shared_ptr<IndexBuffer> index_buffer, 
 		DrawMode draw_mode, 
-		glm::mat4 model_matrix, 
+		ModelMatrixHandler model_matrix,
 		glm::mat4 projection_matrix
 	) {
 		return Entity(buffers, index_buffer, draw_mode, true, model_matrix, projection_matrix);
 	}
 
+
+	void ModelMatrixHandler::translateBy(glm::vec3 delta)
+	{
+		translation = delta;
+	}
+
+	void ModelMatrixHandler::scaleBy(glm::vec3 scale)
+	{
+		this->scale = scale;
+	}
+
+	void ModelMatrixHandler::rotate(float angle)
+	{
+		rotation = angle;
+	}
+
+	glm::mat4 ModelMatrixHandler::getModelMatrix()
+	{
+		glm::mat4 model = glm::mat4(1.0f);
+		model = glm::translate(model, translation);
+		model = glm::scale(model, scale);
+		// Check
+		model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0, 0.0, 1.0f));
+		return model;
+	}
 
 }

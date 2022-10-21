@@ -10,26 +10,48 @@
 #include "../Buffer/DataTypes.h"
 
 namespace Engine {
+	class ModelMatrixHandler {
+	public:
+		ModelMatrixHandler()
+		  : translation(glm::vec3()),
+			rotation(0),
+			scale(glm::vec3(1.0))
+		{}
+
+		void translateBy(glm::vec3 delta);
+		void scaleBy(glm::vec3 scale);
+		/**
+		 * Angle in degrees.
+		 */
+		void rotate(float angle);
+
+		glm::mat4 getModelMatrix();
+
+	private:
+		glm::vec3 translation;
+		glm::vec3 scale;
+		float rotation;
+	};
+
 	class Entity {
 	public:
 		Entity() = delete;
 
 		void draw();
 
-		void setModelMatrix(glm::mat4 matrix);
-		void setProjectionMatrix(glm::mat4 matrix);
-		void setModelMatrixUpdated();
-		void setProjectionMatrixUpdated();
-		glm::mat4 getModelMatrix() const;
+		std::shared_ptr<ModelMatrixHandler> getModelMatrixHandler();
+		glm::mat4 getModelMatrix();
 		glm::mat4 getProjectionMatrix() const;
-		bool needToUpdateModelMatrix() const;
 		bool needToUpdateProjectionMatrix() const;
+
+		void setProjectionMatrix(glm::mat4 matrix);
+		void setProjectionMatrixUpdated();
 
 		static Entity createEntity(
 			const std::initializer_list<std::shared_ptr<VertexBuffer>>& buffers,
 			uint32_t vertex_count,
 			DrawMode draw_mode,
-			glm::mat4 model_matrix = glm::mat4(),
+			ModelMatrixHandler model_matrix = ModelMatrixHandler(),
 			glm::mat4 projection_matrix = glm::mat4()
 		);
 
@@ -37,16 +59,17 @@ namespace Engine {
 			const std::initializer_list<std::shared_ptr<VertexBuffer>>& buffers,
 			std::shared_ptr<IndexBuffer> index_buffer,
 			DrawMode draw_mode,
-			glm::mat4 model_matrix = glm::mat4(),
+			ModelMatrixHandler model_matrix = ModelMatrixHandler(),
 			glm::mat4 projection_matrix = glm::mat4()
 		);
+
 	private:
 		Entity(
 			const std::initializer_list<std::shared_ptr<VertexBuffer>>& buffers,
 			std::shared_ptr<IndexBuffer> index_buffer,
 			DrawMode draw_mode,
 			bool is_indexed,
-			glm::mat4 model_matrix,
+			ModelMatrixHandler model_matrix, 
 			glm::mat4 projection_matrix
 		);
 
@@ -55,7 +78,7 @@ namespace Engine {
 			uint32_t vertex_count,
 			DrawMode draw_mode,
 			bool is_indexed,
-			glm::mat4 model_matrix,
+			ModelMatrixHandler model_matrix, 
 			glm::mat4 projection_matrix
 		);
 
@@ -65,7 +88,7 @@ namespace Engine {
 		DrawMode draw_mode;
 		bool model_matrix_updated;
 		bool projection_matrix_updated;
-		glm::mat4 model_matrix;
 		glm::mat4 projection_matrix;
+		std::shared_ptr<ModelMatrixHandler> model_matrix;
 	};
 }

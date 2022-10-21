@@ -32,7 +32,7 @@ namespace Engine {
 		glBindBuffer(GL_ARRAY_BUFFER, id);
 		glBufferData(
 			GL_ARRAY_BUFFER,
-			vertices.size() * sizeof(Vertex) * 3,
+			vertices.size() * sizeof(Vertex),
 			glm::value_ptr(vertices.front().position),
 			GL_STATIC_DRAW
 		);

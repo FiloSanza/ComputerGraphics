@@ -13,10 +13,7 @@ namespace Engine {
 	
 	void Scene::draw() {
 		for (auto obj : objects) {
-			if (obj->needToUpdateModelMatrix()) {
-				program->uploadUniformMat4("Model", obj->getModelMatrix());
-				obj->setModelMatrixUpdated();
-			}
+			program->uploadUniformMat4("Model", obj->getModelMatrix());
 
 			if (obj->needToUpdateProjectionMatrix()) {
 				program->uploadUniformMat4("Projection", obj->getProjectionMatrix());
