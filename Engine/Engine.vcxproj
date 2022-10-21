@@ -159,7 +159,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Events\EventsDispatcher.cpp" />
-    <ClCompile Include="src\Renderer\Buffer\DataTypes.cpp" />
     <ClCompile Include="src\Renderer\Buffer\IndexBuffer.cpp" />
     <ClCompile Include="src\Renderer\Buffer\VertexArray.cpp" />
     <ClCompile Include="src\Renderer\Buffer\VertexBuffer.cpp" />
