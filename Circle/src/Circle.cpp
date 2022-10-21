@@ -27,7 +27,7 @@ std::shared_ptr<Engine::Entity> create_circle_obj(std::vector<glm::vec3>& vertic
 
 	vertex_vbo->setLayout(layout);
 
-	auto obj = Engine::Entity({ vertex_vbo }, indices_vbo, glm::mat4(), glm::mat4());
+	auto obj = Engine::Entity::createIndexedEntity({ vertex_vbo }, indices_vbo, Engine::DrawMode::Triangles);
 
 	return std::make_shared<Engine::Entity>(std::move(obj));
 }

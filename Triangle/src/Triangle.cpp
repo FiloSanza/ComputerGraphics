@@ -41,7 +41,7 @@ void init_vao() {
 void drawScene() {
 	Engine::RendererUtils::clear(Engine::ClearOptions::ColorBuffer);
 	//Engine::RendererUtils::setPolygonModeDebug();
-	Engine::RendererUtils::drawIndexed(vao);
+	Engine::RendererUtils::drawIndexed(vao, Engine::DrawMode::Triangles);
 	Engine::RendererUtils::swapBuffers();
 }
 
