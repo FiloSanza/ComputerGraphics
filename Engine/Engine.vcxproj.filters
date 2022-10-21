@@ -66,6 +66,9 @@
     <ClInclude Include="src\Utils\Window.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="engine.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Renderer\Buffer\VertexBuffer.cpp">

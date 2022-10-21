@@ -139,6 +139,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="engine.h" />
     <ClInclude Include="src\Events\Event.h" />
     <ClInclude Include="src\Events\EventsDispatcher.h" />
     <ClInclude Include="src\Exceptions\ShaderLoadException.h" />

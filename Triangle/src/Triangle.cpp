@@ -1,13 +1,5 @@
 #include <iostream>
-#include <glm/glm.hpp>
-
-#include "Engine/src/Renderer/RendererUtils.h"
-#include "Engine/src/Renderer/Shader/ShaderProgram.h"
-#include "Engine/src/Renderer/Buffer/VertexBuffer.h"
-#include "Engine/src/Renderer/Buffer/VertexArray.h"
-#include "Engine/src/Renderer/Buffer/DataTypes.h"
-#include "Engine/src/Exceptions/ShaderLoadException.h"
-#include "Engine/src/Utils/Window.h"
+#include "Engine/engine.h"
 
 std::vector<Engine::Vertex> vertices = {
 	{ glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f) },
