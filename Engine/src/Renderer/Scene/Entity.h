@@ -48,44 +48,20 @@ namespace Engine {
 		void setProjectionMatrixUpdated();
 
 		static Entity createEntity(
-			const std::initializer_list<std::shared_ptr<VertexBuffer>>& buffers,
-			uint32_t vertex_count,
-			DrawMode draw_mode,
-			ModelMatrixHandler model_matrix = ModelMatrixHandler(),
-			glm::mat4 projection_matrix = glm::mat4()
-		);
-
-		static Entity createIndexedEntity(
-			const std::initializer_list<std::shared_ptr<VertexBuffer>>& buffers,
-			std::shared_ptr<IndexBuffer> index_buffer,
-			DrawMode draw_mode,
+			std::shared_ptr<VertexArray> vertex_array,
 			ModelMatrixHandler model_matrix = ModelMatrixHandler(),
 			glm::mat4 projection_matrix = glm::mat4()
 		);
 
 	private:
 		Entity(
-			const std::initializer_list<std::shared_ptr<VertexBuffer>>& buffers,
-			std::shared_ptr<IndexBuffer> index_buffer,
-			DrawMode draw_mode,
-			bool is_indexed,
-			ModelMatrixHandler model_matrix, 
-			glm::mat4 projection_matrix
-		);
-
-		Entity(
-			const std::initializer_list<std::shared_ptr<VertexBuffer>>& buffers,
-			uint32_t vertex_count,
-			DrawMode draw_mode,
-			bool is_indexed,
-			ModelMatrixHandler model_matrix, 
+			std::shared_ptr<VertexArray> vertex_array,
+			ModelMatrixHandler model_matrix,
 			glm::mat4 projection_matrix
 		);
 
 		std::shared_ptr<VertexArray> vertex_array;
 
-		bool is_indexed;
-		DrawMode draw_mode;
 		bool model_matrix_updated;
 		bool projection_matrix_updated;
 		glm::mat4 projection_matrix;

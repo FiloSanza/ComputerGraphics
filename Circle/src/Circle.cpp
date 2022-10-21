@@ -4,16 +4,19 @@
 const float PI = 3.14159265359f;
 const float TWO_PI = 2 * PI;
 
-std::vector<Engine::Entity> objects;
 std::shared_ptr<Engine::ShaderProgram> shader_program;
 Engine::Scene scene;
 
 std::shared_ptr<Engine::Entity> create_circle_obj(std::vector<glm::vec3>& vertices) {
 	auto vbo_obj = Engine::VertexBuffer::createStatic(vertices);
 	auto vertex_vbo = std::make_shared<Engine::VertexBuffer>(std::move(vbo_obj));
+	auto vertex_array = std::make_shared<Engine::VertexArray>();
 
 	vertex_vbo->setLayout({ { "Position", Engine::ShaderDataType::Float3 } });
-	auto obj = Engine::Entity::createEntity({ vertex_vbo }, vertices.size(), Engine::DrawMode::TriangleFan);
+	vertex_array->addVertexBuffer(vertex_vbo);
+	vertex_array->setDrawSpecs({ { (uint32_t)vertices.size(), Engine::DrawMode::TriangleFan } });
+
+	auto obj = Engine::Entity::createEntity(vertex_array);
 	return std::make_shared<Engine::Entity>(std::move(obj));
 }
 
@@ -32,6 +35,7 @@ void generate_circle(float center_x, float center_y, float radius, int n_points,
 void drawScene() {
 	Engine::RendererUtils::clear(Engine::ClearOptions::ColorBuffer);
 	scene.draw();
+	//Engine::RendererUtils::draw(vertex_array);
 	Engine::RendererUtils::swapBuffers();
 }
 
@@ -44,7 +48,7 @@ int main(int argc, char** argv)
 	options.title = "Circle";
 	Engine::Window window(options);
 	Engine::RendererUtils::setDisplayFunc(drawScene);
-	Engine::RendererUtils::setClearColor(glm::vec4(0.0, 0.0, 0.0, 1.0));
+	Engine::RendererUtils::setClearColor(glm::vec4(1.0, 0.0, 1.0, 1.0));
 
 	shader_program = std::make_shared<Engine::ShaderProgram>(
 		"..\\Circle\\shaders\\vertexShader.glsl",

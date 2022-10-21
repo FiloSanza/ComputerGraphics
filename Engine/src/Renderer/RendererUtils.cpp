@@ -15,7 +15,7 @@ namespace Engine {
 		glClearColor(color.r, color.g, color.b, color.a);
 	}
 
-	void RendererUtils::setDisplayFunc(draw_func_t func)
+	void RendererUtils::setDisplayFunc(DrawFunc func)
 	{
 		glutDisplayFunc(func);
 	}
@@ -34,22 +34,23 @@ namespace Engine {
 		glClear(mask);
 	}
 
-	void RendererUtils::draw(const std::shared_ptr<VertexArray> vertex_array, DrawMode draw_mode, uint32_t vertex_count)
+	void RendererUtils::draw(const std::shared_ptr<VertexArray> vertex_array)
 	{
+		auto draw_specs = vertex_array->getDrawSpecs();
+
 		vertex_array->bind();
 
-		uint32_t count = vertex_count ? vertex_count : vertex_array->getVertexCount();
-		glDrawArrays(drawModeToGLMode(draw_mode), 0, count);
-	}
-
-	void RendererUtils::drawIndexed(const std::shared_ptr<VertexArray> vertex_array, DrawMode draw_mode, uint32_t index_count)
-	{
-		auto index_buffer = vertex_array->getIndexBuffer();
-
-		vertex_array->bind();
-		index_buffer->bind();
-		uint32_t count = index_count ? index_count : index_buffer->getCount();
-		glDrawElements(drawModeToGLMode(draw_mode), count, GL_UNSIGNED_INT, nullptr);
+		uint32_t offset = 0;
+		for (const auto& spec : draw_specs) {
+			const auto gl_draw_mode = drawModeToGLMode(spec.draw_mode);
+			if (vertex_array->isIndexed()) {
+				glDrawElements(gl_draw_mode, spec.vertices, GL_UNSIGNED_INT, (const void*) offset);
+				offset = spec.vertices;
+			} else {
+				glDrawArrays(gl_draw_mode, offset, offset + spec.vertices);
+				offset += spec.vertices;
+			}
+		}
 	}
 
 	void RendererUtils::setPolygonModeDebug()

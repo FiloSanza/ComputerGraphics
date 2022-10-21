@@ -3,7 +3,7 @@
 
 namespace Engine {
 	VertexArray::VertexArray() 
-		: vertex_attrib_count(0), vertex_count(0)
+		: vertex_attrib_count(0), is_indexed(false)
 	{
 		glGenVertexArrays(1, &id);
 	}
@@ -45,9 +45,9 @@ namespace Engine {
 		buffers.push_back(buffer);
 	}
 
-	void VertexArray::setVertexCount(uint32_t count)
+	bool VertexArray::isIndexed()
 	{
-		vertex_count = count;
+		return is_indexed;
 	}
 
 	std::vector<std::shared_ptr<VertexBuffer>>& VertexArray::getBuffers()
@@ -58,14 +58,21 @@ namespace Engine {
 	void VertexArray::setIndexBuffer(std::shared_ptr<IndexBuffer> new_index_buffer)
 	{
 		index_buffer = new_index_buffer;
+		is_indexed = true;
+	}
+
+	void VertexArray::setDrawSpecs(std::initializer_list<DrawSpec> specs)
+	{
+		draw_specs = specs;
 	}
 
 	std::shared_ptr<IndexBuffer> VertexArray::getIndexBuffer()
 	{
 		return index_buffer;
 	}
-	uint32_t VertexArray::getVertexCount()
+
+	const std::vector<DrawSpec>& VertexArray::getDrawSpecs()
 	{
-		return vertex_count;
+		return draw_specs;
 	}
 }

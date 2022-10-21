@@ -14,16 +14,15 @@ namespace Engine {
 
 	class RendererUtils {
 	public:
-		typedef void (*draw_func_t)(void);
+		typedef void (*DrawFunc)(void);
 
 		static void init(int& argc, char** argv);
 		static void setClearColor(const glm::vec4& color);
-		static void setDisplayFunc(draw_func_t func);
+		static void setDisplayFunc(DrawFunc func);
 		static void startMainLoop();
 		static void swapBuffers();
 		static void clear(int mask);
-		static void draw(const std::shared_ptr<VertexArray> vertex_array, DrawMode draw_mode, uint32_t vertex_count = 0);
-		static void drawIndexed(const std::shared_ptr<VertexArray> vertex_array, DrawMode draw_mode, uint32_t index_count = 0);
+		static void draw(const std::shared_ptr<VertexArray> vertex_array);
 		static void setPolygonModeDebug();
 		static void enableBlend();
 	};

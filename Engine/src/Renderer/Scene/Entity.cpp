@@ -4,57 +4,19 @@
 
 namespace Engine {
 	Entity::Entity(
-		const std::initializer_list<std::shared_ptr<VertexBuffer>>& buffers,
-		std::shared_ptr<IndexBuffer> index_buffer,
-		DrawMode draw_mode,
-		bool is_indexed,
+		std::shared_ptr<VertexArray> vertex_array,
 		ModelMatrixHandler model_matrix,
 		glm::mat4 projection_matrix
-	) : model_matrix_updated(true),
+	) : vertex_array(vertex_array),
+		model_matrix_updated(true),
 		projection_matrix_updated(true),
-		draw_mode(draw_mode),
-		is_indexed(is_indexed),
 		model_matrix(std::make_shared<ModelMatrixHandler>(std::move(model_matrix))), 
 		projection_matrix(projection_matrix)
-	{
-		vertex_array = std::make_shared<VertexArray>();
-		vertex_array->setIndexBuffer(index_buffer);
-
-		for (const auto buffer : buffers) {
-			vertex_array->addVertexBuffer(buffer);
-		}
-	}
-
-	Entity::Entity(
-		const std::initializer_list<std::shared_ptr<VertexBuffer>>& buffers, 
-		uint32_t vertex_count,
-		DrawMode draw_mode, 
-		bool is_indexed, 
-		ModelMatrixHandler model_matrix,
-		glm::mat4 projection_matrix
-	) : model_matrix_updated(true),
-		projection_matrix_updated(true),
-		draw_mode(draw_mode),
-		is_indexed(is_indexed),
-		model_matrix(std::make_shared<ModelMatrixHandler>(std::move(model_matrix))), 
-		projection_matrix(projection_matrix)
-	{
-		vertex_array = std::make_shared<VertexArray>();
-		vertex_array->setVertexCount(vertex_count);
-
-		for (const auto buffer : buffers) {
-			vertex_array->addVertexBuffer(buffer);
-		}
-	}
+	{ }
 
 	void Entity::draw()
 	{
-		if (is_indexed) {
-			RendererUtils::drawIndexed(vertex_array, draw_mode);
-		}
-		else {
-			RendererUtils::draw(vertex_array, draw_mode);
-		}
+		RendererUtils::draw(vertex_array);
 	}
 
 	void Entity::setProjectionMatrix(glm::mat4 matrix)
@@ -89,25 +51,12 @@ namespace Engine {
 	}
 
 	Entity Entity::createEntity(
-		const std::initializer_list<std::shared_ptr<VertexBuffer>>& buffers, 
-		uint32_t vertex_count,
-		DrawMode draw_mode, 
+		std::shared_ptr<VertexArray> vertex_array,
 		ModelMatrixHandler model_matrix,
 		glm::mat4 projection_matrix
 	) {
-		return Entity(buffers, vertex_count, draw_mode, false, model_matrix, projection_matrix);
+		return Entity(vertex_array, model_matrix, projection_matrix);
 	}
-
-	Entity Entity::createIndexedEntity(
-		const std::initializer_list<std::shared_ptr<VertexBuffer>>& buffers, 
-		std::shared_ptr<IndexBuffer> index_buffer, 
-		DrawMode draw_mode, 
-		ModelMatrixHandler model_matrix,
-		glm::mat4 projection_matrix
-	) {
-		return Entity(buffers, index_buffer, draw_mode, true, model_matrix, projection_matrix);
-	}
-
 
 	void ModelMatrixHandler::translateBy(glm::vec3 delta)
 	{
