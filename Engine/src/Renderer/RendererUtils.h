@@ -2,6 +2,7 @@
 
 #include "../lib.h"
 #include "Buffer/VertexArray.h"
+#include "Buffer/DataTypes.h"
 #include <string>
 #include <memory>
 
@@ -21,8 +22,8 @@ namespace Engine {
 		static void startMainLoop();
 		static void swapBuffers();
 		static void clear(int mask);
-		static void drawLines(const std::shared_ptr<VertexArray> vertex_array, uint32_t vertex_count);
-		static void drawIndexed(const std::shared_ptr<VertexArray> vertex_array, uint32_t index_count = 0);
+		static void draw(const std::shared_ptr<VertexArray> vertex_array, DrawMode draw_mode, uint32_t vertex_count = 0);
+		static void drawIndexed(const std::shared_ptr<VertexArray> vertex_array, DrawMode draw_mode, uint32_t index_count = 0);
 		static void setPolygonModeDebug();
 		static void enableBlend();
 	};

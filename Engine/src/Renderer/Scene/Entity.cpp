@@ -47,7 +47,12 @@ namespace Engine {
 
 	void Entity::draw()
 	{
-		RendererUtils::drawIndexed(vertex_array);
+		if (is_indexed) {
+			RendererUtils::drawIndexed(vertex_array, draw_mode);
+		}
+		else {
+			RendererUtils::draw(vertex_array, draw_mode);
+		}
 	}
 
 	void Entity::setModelMatrix(glm::mat4 matrix)
@@ -95,8 +100,8 @@ namespace Engine {
 	Entity Entity::createEntity(
 		const std::initializer_list<std::shared_ptr<VertexBuffer>>& buffers, 
 		DrawMode draw_mode, 
-		glm::mat4 model_matrix = glm::mat4(), 
-		glm::mat4 projection_matrix = glm::mat4()
+		glm::mat4 model_matrix,
+		glm::mat4 projection_matrix
 	) {
 		return Entity(buffers, draw_mode, false, model_matrix, projection_matrix);
 	}
@@ -105,8 +110,8 @@ namespace Engine {
 		const std::initializer_list<std::shared_ptr<VertexBuffer>>& buffers, 
 		std::shared_ptr<IndexBuffer> index_buffer, 
 		DrawMode draw_mode, 
-		glm::mat4 model_matrix = glm::mat4(), 
-		glm::mat4 projection_matrix = glm::mat4()
+		glm::mat4 model_matrix, 
+		glm::mat4 projection_matrix
 	) {
 		return Entity(buffers, index_buffer, draw_mode, true, model_matrix, projection_matrix);
 	}

@@ -13,8 +13,6 @@ namespace Engine {
 	class Entity {
 	public:
 		Entity() = delete;
-		Entity(Entity&) = delete;
-		Entity(Entity&&) = delete;
 
 		void draw();
 

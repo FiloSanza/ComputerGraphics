@@ -34,20 +34,22 @@ namespace Engine {
 		glClear(mask);
 	}
 
-	void RendererUtils::drawLines(const std::shared_ptr<VertexArray> vertex_array, uint32_t vertex_count)
+	void RendererUtils::draw(const std::shared_ptr<VertexArray> vertex_array, DrawMode draw_mode, uint32_t vertex_count)
 	{
 		vertex_array->bind();
-		glDrawArrays(GL_LINES, 0, vertex_count);
+
+		uint32_t count = vertex_count ? vertex_count : vertex_array->getVertexCount();
+		glDrawArrays(drawModeToGLMode(draw_mode), 0, count);
 	}
 
-	void RendererUtils::drawIndexed(const std::shared_ptr<VertexArray> vertex_array, uint32_t index_count)
+	void RendererUtils::drawIndexed(const std::shared_ptr<VertexArray> vertex_array, DrawMode draw_mode, uint32_t index_count)
 	{
 		auto index_buffer = vertex_array->getIndexBuffer();
 
 		vertex_array->bind();
 		index_buffer->bind();
 		uint32_t count = index_count ? index_count : index_buffer->getCount();
-		glDrawElements(GL_TRIANGLES, count, GL_UNSIGNED_INT, nullptr);
+		glDrawElements(drawModeToGLMode(draw_mode), count, GL_UNSIGNED_INT, nullptr);
 	}
 
 	void RendererUtils::setPolygonModeDebug()
