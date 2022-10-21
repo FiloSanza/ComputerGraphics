@@ -14,7 +14,11 @@ void drawScene() {
 	Engine::RendererUtils::swapBuffers();
 }
 
-std::shared_ptr<Engine::Entity> create_scene_object(const std::vector<Engine::Vertex>& vertices, const std::vector<uint32_t> indices) {
+std::shared_ptr<Engine::Entity> create_scene_object(
+	const std::vector<Engine::Vertex>& vertices, 
+	const std::vector<uint32_t> indices, 
+	Engine::DrawMode draw_mode = Engine::DrawMode::Triangles
+) {
 	auto vbo_obj = Engine::VertexBuffer::createStatic(vertices);
 	auto vertex_vbo = std::make_shared<Engine::VertexBuffer>(std::move(vbo_obj));
 	auto indices_vbo = std::make_shared<Engine::IndexBuffer>(indices.data(), indices.size());
@@ -25,7 +29,21 @@ std::shared_ptr<Engine::Entity> create_scene_object(const std::vector<Engine::Ve
 	};
 
 	vertex_vbo->setLayout(layout);
-	auto obj = Engine::Entity::createIndexedEntity({ vertex_vbo }, indices_vbo, Engine::DrawMode::Triangles);
+	auto obj = Engine::Entity::createIndexedEntity({ vertex_vbo }, indices_vbo, draw_mode);
+	return std::make_shared<Engine::Entity>(obj);
+}
+
+std::shared_ptr<Engine::Entity> create_scene_object(const std::vector<Engine::Vertex>& vertices, Engine::DrawMode draw_mode) {
+	auto vbo_obj = Engine::VertexBuffer::createStatic(vertices);
+	auto vertex_vbo = std::make_shared<Engine::VertexBuffer>(std::move(vbo_obj));
+
+	Engine::BufferLayout layout = {
+		{ "Position", Engine::ShaderDataType::Float3 },
+		{ "Color", Engine::ShaderDataType::Float4 },
+	};
+
+	vertex_vbo->setLayout(layout);
+	auto obj = Engine::Entity::createEntity({ vertex_vbo }, vertices.size(), draw_mode);
 	return std::make_shared<Engine::Entity>(obj);
 }
 
@@ -41,55 +59,30 @@ std::shared_ptr<Engine::Entity> create_rectangle(glm::vec3 top_left, glm::vec3 t
 
 std::shared_ptr<Engine::Entity> create_circle(glm::vec3 center, float radius, int n_vertices, glm::vec4 color, float depth) {
 	std::vector<Engine::Vertex> vertices;
-	std::vector<uint32_t> indices;
 	vertices.push_back({ center, color });
 
 	uint32_t idx = 1;
 	float step = TWO_PI / n_vertices;
-	for (float t = 0; t < TWO_PI; t += step) {
-		vertices.push_back({
-			glm::vec3(center.x + cos(t) * radius, center.y + sin(t) * radius, depth),
-			color
-		});
-		idx++;
-		if (idx >= 3) {
-			size_t size = vertices.size();
-			indices.push_back(0);
-			indices.push_back(idx - 2);
-			indices.push_back(idx - 1);
-		}
+	for (int i = 0; i <= n_vertices; i ++) {
+		const float t = step * i;
+		vertices.push_back({ glm::vec3(center.x + cos(t) * radius, center.y + sin(t) * radius, depth), color });
 	}
 
-	indices.push_back(0);
-	indices.push_back(1);
-	indices.push_back(idx - 1);
-
-	return create_scene_object(vertices, indices);
+	return create_scene_object(vertices, Engine::DrawMode::TriangleFan);
 }
 
 std::shared_ptr<Engine::Entity> create_moutains(float start, float end, float height, float depth, float frequency, glm::vec4 color, uint32_t steps) {
 	float delta_x = (end - start) / steps;
 	float delta_angle = TWO_PI / steps;
 	std::vector<Engine::Vertex> vertices;
-	std::vector<uint32_t> indices;
 
 	uint32_t idx = 0;
 	for (float x = start, angle = 0; x <= end; x+=delta_x, angle+=delta_angle) {
 		vertices.push_back({ glm::vec3(x, 0, depth), color });
 		vertices.push_back({ glm::vec3(x, abs(sin(angle * frequency) * height), depth), color });
-		idx += 2;
-
-		if (idx > 3) {
-			indices.push_back(idx - 4);
-			indices.push_back(idx - 3);
-			indices.push_back(idx - 2);
-			indices.push_back(idx - 3);
-			indices.push_back(idx - 2);
-			indices.push_back(idx - 1);
-		}
 	}
 
-	return create_scene_object(vertices, indices);
+	return create_scene_object(vertices, Engine::DrawMode::TriangleStrip);
 }
 
 int main(int argc, char** argv)
