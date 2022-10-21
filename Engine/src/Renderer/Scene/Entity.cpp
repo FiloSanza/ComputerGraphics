@@ -5,16 +5,40 @@
 namespace Engine {
 	Entity::Entity(
 		const std::initializer_list<std::shared_ptr<VertexBuffer>>& buffers,
-		std::shared_ptr<IndexBuffer> idx_buffer,
-		glm::mat4 model_matrix, 
+		std::shared_ptr<IndexBuffer> index_buffer,
+		DrawMode draw_mode,
+		bool is_indexed,
+		glm::mat4 model_matrix,
 		glm::mat4 projection_matrix
-	) : model_matrix_updated(true), 
-		projection_matrix_updated(true), 
+	) : model_matrix_updated(true),
+		projection_matrix_updated(true),
+		draw_mode(draw_mode),
+		is_indexed(is_indexed),
 		model_matrix(model_matrix), 
 		projection_matrix(projection_matrix)
 	{
 		vertex_array = std::make_shared<VertexArray>();
-		vertex_array->setIndexBuffer(idx_buffer);
+		vertex_array->setIndexBuffer(index_buffer);
+
+		for (const auto buffer : buffers) {
+			vertex_array->addVertexBuffer(buffer);
+		}
+	}
+
+	Entity::Entity(
+		const std::initializer_list<std::shared_ptr<VertexBuffer>>& buffers, 
+		DrawMode draw_mode, 
+		bool is_indexed, 
+		glm::mat4 model_matrix, 
+		glm::mat4 projection_matrix
+	) : model_matrix_updated(true),
+		projection_matrix_updated(true),
+		draw_mode(draw_mode),
+		is_indexed(is_indexed),
+		model_matrix(model_matrix),
+		projection_matrix(projection_matrix)
+	{
+		vertex_array = std::make_shared<VertexArray>();
 
 		for (const auto buffer : buffers) {
 			vertex_array->addVertexBuffer(buffer);
@@ -66,6 +90,25 @@ namespace Engine {
 	bool Entity::needToUpdateProjectionMatrix() const
 	{
 		return projection_matrix_updated;
+	}
+
+	Entity Entity::createEntity(
+		const std::initializer_list<std::shared_ptr<VertexBuffer>>& buffers, 
+		DrawMode draw_mode, 
+		glm::mat4 model_matrix = glm::mat4(), 
+		glm::mat4 projection_matrix = glm::mat4()
+	) {
+		return Entity(buffers, draw_mode, false, model_matrix, projection_matrix);
+	}
+
+	Entity Entity::createIndexedEntity(
+		const std::initializer_list<std::shared_ptr<VertexBuffer>>& buffers, 
+		std::shared_ptr<IndexBuffer> index_buffer, 
+		DrawMode draw_mode, 
+		glm::mat4 model_matrix = glm::mat4(), 
+		glm::mat4 projection_matrix = glm::mat4()
+	) {
+		return Entity(buffers, index_buffer, draw_mode, true, model_matrix, projection_matrix);
 	}
 
 
