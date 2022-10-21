@@ -24,7 +24,7 @@ void drawScene() {
 	Engine::RendererUtils::swapBuffers();
 }
 
-std::shared_ptr<Engine::Entity> create_scene_object(const std::vector<float>& vertices, const std::vector<uint32_t> indices) {
+std::shared_ptr<Engine::Entity> create_scene_object(const std::vector<Engine::Vertex>& vertices, const std::vector<uint32_t> indices) {
 	auto vbo_obj = Engine::VertexBuffer::createStatic(vertices);
 	auto vertex_vbo = std::make_shared<Engine::VertexBuffer>(std::move(vbo_obj));
 	auto indices_vbo = std::make_shared<Engine::IndexBuffer>(indices.data(), indices.size());
@@ -39,39 +39,28 @@ std::shared_ptr<Engine::Entity> create_scene_object(const std::vector<float>& ve
 	return std::make_shared<Engine::Entity>(obj);
 }
 
-void push_glm_vertex_to_vector(std::vector<float>& vec, const glm::vec3 coord, const glm::vec4 color) {
-	vec.push_back(coord.x);
-	vec.push_back(coord.y);
-	vec.push_back(coord.z);
-	vec.push_back(color.r);
-	vec.push_back(color.g);
-	vec.push_back(color.b);
-	vec.push_back(color.a);
-}
-
 std::shared_ptr<Engine::Entity> create_rectangle(glm::vec3 top_left, glm::vec3 top_right, glm::vec3 bottom_right, glm::vec3 bottom_left, glm::vec4 color) {
-	std::vector<float> vertices = {};
-	push_glm_vertex_to_vector(vertices, top_left, color);
-	push_glm_vertex_to_vector(vertices, top_right, color);
-	push_glm_vertex_to_vector(vertices, bottom_right, color);
-	push_glm_vertex_to_vector(vertices, bottom_left, color);
+	std::vector<Engine::Vertex> vertices = {};
+	vertices.push_back({ top_left,     color });
+	vertices.push_back({ top_right,    color });
+	vertices.push_back({ bottom_right, color });
+	vertices.push_back({ bottom_left,  color });
 	std::vector<uint32_t> indices = { 0, 1, 2, 0, 2, 3 };
 	return create_scene_object(vertices, indices);
 }
 
 std::shared_ptr<Engine::Entity> create_circle(glm::vec3 center, float radius, int n_vertices, glm::vec4 color, float depth) {
-	std::vector<float> vertices;
+	std::vector<Engine::Vertex> vertices;
 	std::vector<uint32_t> indices;
-	push_glm_vertex_to_vector(vertices, center, color);
+	vertices.push_back({ center, color });
 
 	uint32_t idx = 1;
 	float step = TWO_PI / n_vertices;
 	for (float t = 0; t < TWO_PI; t += step) {
-		push_glm_vertex_to_vector(
-			vertices, 
-			glm::vec3(center.x + cos(t) * radius, center.y + sin(t) * radius, depth), 
+		vertices.push_back({
+			glm::vec3(center.x + cos(t) * radius, center.y + sin(t) * radius, depth),
 			color
-		);
+		});
 		idx++;
 		if (idx >= 3) {
 			size_t size = vertices.size();
@@ -91,13 +80,13 @@ std::shared_ptr<Engine::Entity> create_circle(glm::vec3 center, float radius, in
 std::shared_ptr<Engine::Entity> create_moutains(float start, float end, float height, float depth, float frequency, glm::vec4 color, uint32_t steps) {
 	float delta_x = (end - start) / steps;
 	float delta_angle = TWO_PI / steps;
-	std::vector<float> vertices;
+	std::vector<Engine::Vertex> vertices;
 	std::vector<uint32_t> indices;
 
 	uint32_t idx = 0;
 	for (float x = start, angle = 0; x <= end; x+=delta_x, angle+=delta_angle) {
-		push_glm_vertex_to_vector(vertices, glm::vec3(x, 0, depth), color);
-		push_glm_vertex_to_vector(vertices, glm::vec3(x, abs(sin(angle * frequency) * height), depth), color);
+		vertices.push_back({ glm::vec3(x, 0, depth), color });
+		vertices.push_back({ glm::vec3(x, abs(sin(angle * frequency) * height), depth), color });
 		idx += 2;
 
 		if (idx > 3) {

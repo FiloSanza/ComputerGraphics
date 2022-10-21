@@ -7,12 +7,13 @@
 #include "Engine/src/Renderer/Buffer/VertexArray.h"
 #include "Engine/src/Renderer/Buffer/DataTypes.h"
 #include "Engine/src/Exceptions/ShaderLoadException.h"
+#include "Engine/src/Utils/Window.h"
 
-std::vector<float> vertices = {
-	-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f,
-	0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f,
-	-0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 1.0f,
-	0.5f,  0.5f, 0.0f, 1.0f, 0.0f, 0.0f, 1.0f
+std::vector<Engine::Vertex> vertices = {
+	{ glm::vec3(-0.5f, -0.5f, 0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f) },
+	{ glm::vec3( 0.5f, -0.5f, 0.0f), glm::vec4(0.0f, 1.0f, 0.0f, 1.0f) },
+	{ glm::vec3(-0.5f,  0.5f, 0.0f), glm::vec4(0.0f, 0.0f, 1.0f, 1.0f) },
+	{ glm::vec3( 0.5f,  0.5f, 0.0f), glm::vec4(1.0f, 0.0f, 0.0f, 1.0f) }
 };
 
 uint32_t indices[] = {
@@ -39,13 +40,19 @@ void init_vao() {
 
 void drawScene() {
 	Engine::RendererUtils::clear(Engine::ClearOptions::ColorBuffer);
+	//Engine::RendererUtils::setPolygonModeDebug();
 	Engine::RendererUtils::drawIndexed(vao);
 	Engine::RendererUtils::swapBuffers();
 }
 
 int main(int argc, char** argv)
 {
-	Engine::RendererUtils::init(argc, argv, 800, 800, 100, 100, "Triangolo");
+	Engine::RendererUtils::init(argc, argv);
+	Engine::WindowOptions options;
+	options.title = "Triangle";
+	options.height = 800;
+	options.width = 800;
+	Engine::Window window(options);
 	Engine::RendererUtils::setDisplayFunc(drawScene);
 	Engine::RendererUtils::setClearColor(glm::vec4(0.0, 0.0, 0.0, 1.0));
 
