@@ -5,17 +5,18 @@
 #include "Engine/src/Renderer/Buffer/VertexArray.h"
 #include "Engine/src/Renderer/Buffer/DataTypes.h"
 #include "Engine/src/Exceptions/ShaderLoadException.h"
-#include "Engine/src/Renderer/Objects/Object.h"
-#include "Engine/src/Renderer/Objects/Scene.h"
+#include "Engine/src/Renderer/Scene/Entity.h"
+#include "Engine/src/Renderer/Scene/Scene.h"
+#include "Engine/src/Utils/Window.h"
 
 const float PI = 3.14159265359f;
 const float TWO_PI = 2 * PI;
 
-std::vector<Engine::Object2D> objects;
+std::vector<Engine::Entity> objects;
 std::shared_ptr<Engine::ShaderProgram> shader_program;
 Engine::Scene scene;
 
-std::shared_ptr<Engine::Object2D> create_circle_obj(std::vector<glm::vec3>& vertices, std::vector<uint32_t>& indices) {
+std::shared_ptr<Engine::Entity> create_circle_obj(std::vector<glm::vec3>& vertices, std::vector<uint32_t>& indices) {
 	auto vbo_obj = Engine::VertexBuffer::createStatic(vertices);
 	auto vertex_vbo = std::make_shared<Engine::VertexBuffer>(std::move(vbo_obj));
 	auto indices_vbo = std::make_shared<Engine::IndexBuffer>(indices.data(), indices.size());
@@ -26,9 +27,9 @@ std::shared_ptr<Engine::Object2D> create_circle_obj(std::vector<glm::vec3>& vert
 
 	vertex_vbo->setLayout(layout);
 
-	auto obj = Engine::Object2D({ vertex_vbo }, indices_vbo, glm::mat4(), glm::mat4());
+	auto obj = Engine::Entity({ vertex_vbo }, indices_vbo, glm::mat4(), glm::mat4());
 
-	return std::make_shared<Engine::Object2D>(std::move(obj));
+	return std::make_shared<Engine::Entity>(std::move(obj));
 }
 
 void generate_circle(float center_x, float center_y, float radius, int n_points, std::vector<glm::vec3>& vertices, std::vector<uint32_t>& indices) {
@@ -63,7 +64,12 @@ void drawScene() {
 
 int main(int argc, char** argv)
 {
-	Engine::RendererUtils::init(argc, argv, 800, 800, 100, 100, "Circle");
+	Engine::RendererUtils::init(argc, argv);
+	Engine::WindowOptions options;
+	options.height = 800;
+	options.width = 800;
+	options.title = "Circle";
+	Engine::Window window(options);
 	Engine::RendererUtils::setDisplayFunc(drawScene);
 	Engine::RendererUtils::setClearColor(glm::vec4(0.0, 0.0, 0.0, 1.0));
 

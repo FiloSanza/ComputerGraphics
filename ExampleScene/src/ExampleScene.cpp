@@ -5,8 +5,8 @@
 #include "Engine/src/Renderer/Buffer/VertexArray.h"
 #include "Engine/src/Renderer/Buffer/DataTypes.h"
 #include "Engine/src/Exceptions/ShaderLoadException.h"
-#include "Engine/src/Renderer/Objects/Object.h"
-#include "Engine/src/Renderer/Objects/Scene.h"
+#include "Engine/src/Renderer/Scene/Entity.h"
+#include "Engine/src/Renderer/Scene/Scene.h"
 #include "Engine/src/Utils/Window.h"
 #include "Engine/src/Events/EventsDispatcher.h"
 #include "Engine/src/Events/Event.h"
@@ -24,7 +24,7 @@ void drawScene() {
 	Engine::RendererUtils::swapBuffers();
 }
 
-std::shared_ptr<Engine::Object2D> create_scene_object(const std::vector<float>& vertices, const std::vector<uint32_t> indices) {
+std::shared_ptr<Engine::Entity> create_scene_object(const std::vector<float>& vertices, const std::vector<uint32_t> indices) {
 	auto vbo_obj = Engine::VertexBuffer::createStatic(vertices);
 	auto vertex_vbo = std::make_shared<Engine::VertexBuffer>(std::move(vbo_obj));
 	auto indices_vbo = std::make_shared<Engine::IndexBuffer>(indices.data(), indices.size());
@@ -35,8 +35,8 @@ std::shared_ptr<Engine::Object2D> create_scene_object(const std::vector<float>& 
 	};
 
 	vertex_vbo->setLayout(layout);
-	auto obj = Engine::Object2D({ vertex_vbo }, indices_vbo, glm::mat4(), glm::mat4());
-	return std::make_shared<Engine::Object2D>(obj);
+	auto obj = Engine::Entity({ vertex_vbo }, indices_vbo, glm::mat4(), glm::mat4());
+	return std::make_shared<Engine::Entity>(obj);
 }
 
 void push_glm_vertex_to_vector(std::vector<float>& vec, const glm::vec3 coord, const glm::vec4 color) {
@@ -49,7 +49,7 @@ void push_glm_vertex_to_vector(std::vector<float>& vec, const glm::vec3 coord, c
 	vec.push_back(color.a);
 }
 
-std::shared_ptr<Engine::Object2D> create_rectangle(glm::vec3 top_left, glm::vec3 top_right, glm::vec3 bottom_right, glm::vec3 bottom_left, glm::vec4 color) {
+std::shared_ptr<Engine::Entity> create_rectangle(glm::vec3 top_left, glm::vec3 top_right, glm::vec3 bottom_right, glm::vec3 bottom_left, glm::vec4 color) {
 	std::vector<float> vertices = {};
 	push_glm_vertex_to_vector(vertices, top_left, color);
 	push_glm_vertex_to_vector(vertices, top_right, color);
@@ -59,7 +59,7 @@ std::shared_ptr<Engine::Object2D> create_rectangle(glm::vec3 top_left, glm::vec3
 	return create_scene_object(vertices, indices);
 }
 
-std::shared_ptr<Engine::Object2D> create_circle(glm::vec3 center, float radius, int n_vertices, glm::vec4 color, float depth) {
+std::shared_ptr<Engine::Entity> create_circle(glm::vec3 center, float radius, int n_vertices, glm::vec4 color, float depth) {
 	std::vector<float> vertices;
 	std::vector<uint32_t> indices;
 	push_glm_vertex_to_vector(vertices, center, color);
@@ -74,7 +74,7 @@ std::shared_ptr<Engine::Object2D> create_circle(glm::vec3 center, float radius, 
 		);
 		idx++;
 		if (idx >= 3) {
-			uint32_t size = vertices.size();
+			size_t size = vertices.size();
 			indices.push_back(0);
 			indices.push_back(idx - 2);
 			indices.push_back(idx - 1);
@@ -88,7 +88,7 @@ std::shared_ptr<Engine::Object2D> create_circle(glm::vec3 center, float radius, 
 	return create_scene_object(vertices, indices);
 }
 
-std::shared_ptr<Engine::Object2D> create_moutains(float start, float end, float height, float depth, float frequency, glm::vec4 color, uint32_t steps) {
+std::shared_ptr<Engine::Entity> create_moutains(float start, float end, float height, float depth, float frequency, glm::vec4 color, uint32_t steps) {
 	float delta_x = (end - start) / steps;
 	float delta_angle = TWO_PI / steps;
 	std::vector<float> vertices;
@@ -116,14 +116,32 @@ std::shared_ptr<Engine::Object2D> create_moutains(float start, float end, float 
 int main(int argc, char** argv)
 {
 	Engine::RendererUtils::init(argc, argv);
-	Engine::Window window("ExampleScene", 800, 800);
+	Engine::WindowOptions options;
+	options.title = "ExampleScene";
+	options.height = 800;
+	options.width = 800;
+	options.enableEvent(Engine::WindowEvent::KeyPress);
+	options.enableEvent(Engine::WindowEvent::MouseClick);
+	options.enableEvent(Engine::WindowEvent::MouseMovement);
+	Engine::Window window(options);
 	Engine::RendererUtils::setDisplayFunc(drawScene);
 	Engine::RendererUtils::setClearColor(glm::vec4(0.0, 0.0, 0.0, 1.0));
 	Engine::RendererUtils::enableBlend();
 
 	Engine::EventsDispatcher::getInstance().registerCallback(Engine::EventType::KeyPressed, [](const Engine::Event& evt) {
-		std::cout << "Key " << (unsigned char)evt.getKey() << " pressed.\n";
-		return true;
+		std::cout << "Key '" << (unsigned char)evt.getKey() << "' pressed\n";
+	});
+
+	Engine::EventsDispatcher::getInstance().registerCallback(Engine::EventType::MouseClick, [](const Engine::Event& evt) {
+		std::cout << "Key " 
+			<< Engine::Mouse::mouseButtonToString(evt.getMouseButton())  
+			<< " is " 
+			<< Engine::Mouse::mouseButtonStateToString(evt.getMouseButtonState()) 
+			<< "\n";
+	});
+
+	Engine::EventsDispatcher::getInstance().registerCallback(Engine::EventType::MouseMoved, [](const Engine::Event& evt) {
+		std::cout << "Mouse at: {" << evt.getMouseX() << ", " << evt.getMouseY() << "}\n";
 	});
 
 	shader_program = std::make_shared<Engine::ShaderProgram>(
