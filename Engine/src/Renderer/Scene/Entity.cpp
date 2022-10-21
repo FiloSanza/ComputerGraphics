@@ -27,6 +27,7 @@ namespace Engine {
 
 	Entity::Entity(
 		const std::initializer_list<std::shared_ptr<VertexBuffer>>& buffers, 
+		uint32_t vertex_count,
 		DrawMode draw_mode, 
 		bool is_indexed, 
 		glm::mat4 model_matrix, 
@@ -39,6 +40,7 @@ namespace Engine {
 		projection_matrix(projection_matrix)
 	{
 		vertex_array = std::make_shared<VertexArray>();
+		vertex_array->setVertexCount(vertex_count);
 
 		for (const auto buffer : buffers) {
 			vertex_array->addVertexBuffer(buffer);
@@ -99,11 +101,12 @@ namespace Engine {
 
 	Entity Entity::createEntity(
 		const std::initializer_list<std::shared_ptr<VertexBuffer>>& buffers, 
+		uint32_t vertex_count,
 		DrawMode draw_mode, 
 		glm::mat4 model_matrix,
 		glm::mat4 projection_matrix
 	) {
-		return Entity(buffers, draw_mode, false, model_matrix, projection_matrix);
+		return Entity(buffers, vertex_count, draw_mode, false, model_matrix, projection_matrix);
 	}
 
 	Entity Entity::createIndexedEntity(

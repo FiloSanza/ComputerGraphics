@@ -27,6 +27,7 @@ namespace Engine {
 
 		static Entity createEntity(
 			const std::initializer_list<std::shared_ptr<VertexBuffer>>& buffers,
+			uint32_t vertex_count,
 			DrawMode draw_mode,
 			glm::mat4 model_matrix = glm::mat4(),
 			glm::mat4 projection_matrix = glm::mat4()
@@ -51,6 +52,7 @@ namespace Engine {
 
 		Entity(
 			const std::initializer_list<std::shared_ptr<VertexBuffer>>& buffers,
+			uint32_t vertex_count,
 			DrawMode draw_mode,
 			bool is_indexed,
 			glm::mat4 model_matrix,
