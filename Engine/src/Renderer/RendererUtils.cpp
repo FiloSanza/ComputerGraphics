@@ -59,6 +59,11 @@ namespace Engine {
 		glutPostRedisplay();
 	}
 
+	void RendererUtils::addTimerCallback(Callback callback, uint32_t timeout, int value)
+	{
+		glutTimerFunc(timeout, callback, value);
+	}
+
 	void RendererUtils::setPolygonModeDebug()
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);

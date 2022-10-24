@@ -15,6 +15,7 @@ namespace Engine {
 	class RendererUtils {
 	public:
 		typedef void (*DrawFunc)(void);
+		typedef void (*Callback)(int);
 
 		static void init(int& argc, char** argv);
 		static void setClearColor(const glm::vec4& color);
@@ -26,6 +27,7 @@ namespace Engine {
 		static void setPolygonModeDebug();
 		static void enableBlend();
 		static void updateWindow();
+		static void addTimerCallback(Callback callback, uint32_t timeout, int value);
 	};
 
 }

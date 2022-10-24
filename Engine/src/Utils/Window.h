@@ -35,11 +35,14 @@ namespace Engine {
 		Window(WindowOptions options);
 		~Window();
 
+		bool isKeyPressed(Keyboard::Key key);
+
 	private:
 		void init();
 
 		int id;
 		WindowOptions options;
+		Keyboard::KeyboardState keyboard_state;
 	};
 
 };

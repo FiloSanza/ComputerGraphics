@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <cassert>
+#include <unordered_map>
 
 namespace Engine {
 
@@ -62,6 +63,14 @@ namespace Engine {
 			Backslash = 92,  /* \ */
 			RightBracket = 93,  /* ] */
 			GraveAccent = 96,  /* ` */
+		};
+
+		class KeyboardState {
+		public:
+			bool isPressed(Key key) { return states.count(key) ? states[key] : false; }
+			void setPressed(Key key, bool is_pressed) { states[key] = is_pressed; }
+		private:
+			std::unordered_map<Key, bool> states;
 		};
 	}
 

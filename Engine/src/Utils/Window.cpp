@@ -20,6 +20,11 @@ namespace Engine {
 		glutDestroyWindow(id);
 	}
 
+	bool Window::isKeyPressed(Keyboard::Key key)
+	{
+		return keyboard_state.isPressed(key);
+	}
+
 	void Window::init()
 	{
 		glutInitWindowSize(options.width, options.height);
@@ -35,6 +40,21 @@ namespace Engine {
 			glutKeyboardFunc([](Keyboard::KeyCode key, int x, int y) {
 				auto evt = Event::createKeyPressedEvent((Keyboard::Key)key);
 				EventsDispatcher::getInstance().dispatch(evt);
+			});
+
+			glutKeyboardUpFunc([](Keyboard::KeyCode key, int x, int y) {
+				auto evt = Event::createKeyReleasedEvent((Keyboard::Key)key);
+				EventsDispatcher::getInstance().dispatch(evt);
+			});
+
+			glutIgnoreKeyRepeat(1);
+
+			EventsDispatcher::getInstance().registerCallback(EventType::KeyPressed, [this](const Event& evt) {
+				keyboard_state.setPressed(evt.getKey(), true);
+			});
+
+			EventsDispatcher::getInstance().registerCallback(EventType::KeyReleased, [this](const Event& evt) {
+				keyboard_state.setPressed(evt.getKey(), false);
 			});
 		}
 
