@@ -17,9 +17,49 @@ struct User {
 	std::shared_ptr<Engine::Entity> entity;
 };
 
+struct Bullet {
+	float x = 0;
+	float y = 0;
+	float delta_x = 0;
+	float delta_y = 0;
+	std::shared_ptr<Engine::Entity> entity;
+};
+
+std::vector<Bullet> bullets;
+
 User user;
 
-std::shared_ptr<Engine::VertexArray> create_circle_vao(float center_x, float center_y, float radius, int n_points) {
+std::shared_ptr<Engine::Entity> create_bullet(float center_x, float center_y, float radius, int n_points) {	
+	auto color = glm::vec4(1, 0, 0, 1.0);
+	std::vector<Engine::Vertex> vertices;
+	vertices.push_back({ glm::vec3(center_x, center_y, 0), color });
+
+	float step = TWO_PI / n_points;
+	for (int i = 0; i <= n_points; i++) {
+		const float t = step * i;
+		const float x = cos(t) * radius + center_x;
+		const float y = sin(t) * radius + center_y;
+		vertices.push_back({ glm::vec3(x, y, 0), color });
+	}
+
+	auto vbo_obj = Engine::VertexBuffer::createStatic(vertices);
+	auto vertex_vbo = std::make_shared<Engine::VertexBuffer>(std::move(vbo_obj));
+	auto vertex_array = std::make_shared<Engine::VertexArray>();
+
+	vertex_vbo->setLayout({
+		{ "Position", Engine::ShaderDataType::Float3 },
+		{ "Color", Engine::ShaderDataType::Float4 },
+	});
+	vertex_array->addVertexBuffer(vertex_vbo);
+	vertex_array->setDrawSpecs({
+		{ (uint32_t)vertices.size(), Engine::DrawMode::TriangleFan },
+	});
+
+	auto obj = Engine::Entity::createEntity(vertex_array);
+	return std::make_shared<Engine::Entity>(obj);
+}
+
+std::shared_ptr<Engine::VertexArray> create_user(float center_x, float center_y, float radius, int n_points) {
 	auto color = glm::vec4(0, 0, 1, 1.0);
 	std::vector<Engine::Vertex> vertices;
 	vertices.push_back({ glm::vec3(center_x, center_y, 0), color });
@@ -55,16 +95,16 @@ std::shared_ptr<Engine::VertexArray> create_circle_vao(float center_x, float cen
 	return vertex_array;
 }
 
-std::shared_ptr<Engine::Entity> generate_circle(float center_x, float center_y, float radius, int n_points) {
-	auto vao = create_circle_vao(center_x, center_y, radius, n_points);
+std::shared_ptr<Engine::Entity> generate_user(float center_x, float center_y, float radius, int n_points) {
+	auto vao = create_user(center_x, center_y, radius, n_points);
 	auto obj = Engine::Entity::createEntity(vao);
-	return std::make_shared<Engine::Entity>(std::move(obj));
+	return std::make_shared<Engine::Entity>(obj);
 }
 
 void update_user_entity() {
 	const auto proj_matrix = user.entity->getModelMatrixHandler();
 	proj_matrix->translateBy(glm::vec3(width / 2 + user.x, height / 2 + user.y, 0.0));
-	proj_matrix->scaleBy(glm::vec3(100.0, 100.0, 0.0));
+	proj_matrix->scaleBy(glm::vec3(100.0, 100.0, 1.0));
 	proj_matrix->rotate(user.angle);
 	Engine::RendererUtils::updateWindow();
 }
@@ -94,7 +134,19 @@ void update_user_position(int value) {
 	}
 
 	update_user_entity();
-	Engine::RendererUtils::addTimerCallback(update_user_position, 50, 0);
+	Engine::RendererUtils::addTimerCallback(update_user_position, 25, 0);
+}
+
+void update_bullets(int value) {
+	for (auto& bullet : bullets) {
+		auto model_mat = bullet.entity->getModelMatrixHandler();
+		bullet.x += bullet.delta_x * 10;
+		bullet.y += bullet.delta_y * 10;
+		model_mat->translateBy(glm::vec3(bullet.x, bullet.y, 0));
+	}
+
+	Engine::RendererUtils::updateWindow();
+	Engine::RendererUtils::addTimerCallback(update_bullets, 25, 0);
 }
 
 int main(int argc, char** argv)
@@ -106,6 +158,7 @@ int main(int argc, char** argv)
 	options.title = "Assignment 1";
 	options.enableEvent(Engine::WindowEvent::KeyPress);
 	options.enableEvent(Engine::WindowEvent::MouseMovement);
+	options.enableEvent(Engine::WindowEvent::MouseClick);
 	window = std::make_shared<Engine::Window>(options);
 	Engine::RendererUtils::setDisplayFunc(drawScene);
 	Engine::RendererUtils::setClearColor(glm::vec4(1.0, 0.0, 1.0, 1.0));
@@ -124,13 +177,33 @@ int main(int argc, char** argv)
 		update_user_entity();
 	});
 
-	user.entity = generate_circle(0, 0, 1, 50);
+	Engine::EventsDispatcher::getInstance().registerCallback(Engine::EventType::MouseClick, [&](const Engine::Event& evt) {
+		if (evt.getMouseButton() != Engine::Mouse::Button::Left) {
+			return;
+		}
+
+		auto click_x = evt.getMouseX() - width / 2.0;
+		auto click_y = height / 2.0 - evt.getMouseY();
+		auto delta = glm::normalize(glm::vec3(click_x - user.x, click_y - user.y, 0));
+
+		auto bullet = create_bullet(0, 0, 1, 4);
+		bullet->setProjectionMatrix(glm::ortho(0.0f, (float)width, 0.0f, (float)height));
+		bullet->getModelMatrixHandler()->scaleBy(glm::vec3(20, 20, 0));
+		scene.addObject(bullet);
+
+		bullets.push_back({
+			user.x + width / 2.0f, user.y + height / 2.0f, delta.x, delta.y, bullet
+		});
+	});
+	
+	user.entity = generate_user(0, 0, 1, 100);
 	user.entity->setProjectionMatrix(glm::ortho(0.0f, (float)width, 0.0f, (float)height));
 
 	shader_program->bind();
 	scene = Engine::Scene(shader_program, { user.entity });
 	update_user_entity();
 
-	Engine::RendererUtils::addTimerCallback(update_user_position, 50, 0);
+	Engine::RendererUtils::addTimerCallback(update_user_position, 25, 0);
+	Engine::RendererUtils::addTimerCallback(update_bullets, 25, 0);
 	Engine::RendererUtils::startMainLoop();
 }

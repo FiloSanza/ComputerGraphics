@@ -71,7 +71,7 @@ namespace Engine {
 					return;
 				}
 
-				auto evt = Event::createMouseClickEvent((Mouse::Button)button);
+				auto evt = Event::createMouseClickEvent((Mouse::Button)button, x, y);
 				EventsDispatcher::getInstance().dispatch(evt);
 			});
 		}
