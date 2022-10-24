@@ -30,6 +30,11 @@ namespace Engine {
 		projection_matrix_updated = false;
 	}
 
+	void Entity::updateVertexArray(std::shared_ptr<VertexArray> new_vertex_array)
+	{
+		vertex_array = new_vertex_array;
+	}
+
 	std::shared_ptr<ModelMatrixHandler> Entity::getModelMatrixHandler()
 	{
 		return model_matrix;

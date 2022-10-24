@@ -54,6 +54,11 @@ namespace Engine {
 		}
 	}
 
+	void RendererUtils::updateWindow()
+	{
+		glutPostRedisplay();
+	}
+
 	void RendererUtils::setPolygonModeDebug()
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);

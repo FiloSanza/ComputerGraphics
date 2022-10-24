@@ -46,6 +46,7 @@ namespace Engine {
 
 		void setProjectionMatrix(glm::mat4 matrix);
 		void setProjectionMatrixUpdated();
+		void updateVertexArray(std::shared_ptr<VertexArray> new_vertex_array);
 
 		static Entity createEntity(
 			std::shared_ptr<VertexArray> vertex_array,

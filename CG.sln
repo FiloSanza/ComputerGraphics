@@ -20,6 +20,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExampleScene", "ExampleScen
 		{623C9BE2-0555-40BD-9694-E5878263F9B0} = {623C9BE2-0555-40BD-9694-E5878263F9B0}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Assignment1", "Assignment1\Assignment1.vcxproj", "{512EC6EB-D993-401A-A6D7-AF1B553A6186}"
+	ProjectSection(ProjectDependencies) = postProject
+		{623C9BE2-0555-40BD-9694-E5878263F9B0} = {623C9BE2-0555-40BD-9694-E5878263F9B0}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -60,6 +65,14 @@ Global
 		{C66A443E-4E64-43FA-AC02-EF5EBB78EFD2}.Release|x64.Build.0 = Release|x64
 		{C66A443E-4E64-43FA-AC02-EF5EBB78EFD2}.Release|x86.ActiveCfg = Release|Win32
 		{C66A443E-4E64-43FA-AC02-EF5EBB78EFD2}.Release|x86.Build.0 = Release|Win32
+		{512EC6EB-D993-401A-A6D7-AF1B553A6186}.Debug|x64.ActiveCfg = Debug|x64
+		{512EC6EB-D993-401A-A6D7-AF1B553A6186}.Debug|x64.Build.0 = Debug|x64
+		{512EC6EB-D993-401A-A6D7-AF1B553A6186}.Debug|x86.ActiveCfg = Debug|Win32
+		{512EC6EB-D993-401A-A6D7-AF1B553A6186}.Debug|x86.Build.0 = Debug|Win32
+		{512EC6EB-D993-401A-A6D7-AF1B553A6186}.Release|x64.ActiveCfg = Release|x64
+		{512EC6EB-D993-401A-A6D7-AF1B553A6186}.Release|x64.Build.0 = Release|x64
+		{512EC6EB-D993-401A-A6D7-AF1B553A6186}.Release|x86.ActiveCfg = Release|Win32
+		{512EC6EB-D993-401A-A6D7-AF1B553A6186}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -25,6 +25,7 @@ namespace Engine {
 		static void draw(const std::shared_ptr<VertexArray>& vertex_array);
 		static void setPolygonModeDebug();
 		static void enableBlend();
+		static void updateWindow();
 	};
 
 }
