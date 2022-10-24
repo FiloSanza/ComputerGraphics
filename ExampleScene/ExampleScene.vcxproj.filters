@@ -20,8 +20,8 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
     <None Include="shaders\vertexShader.glsl" />
     <None Include="shaders\fragmentShader.glsl" />
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

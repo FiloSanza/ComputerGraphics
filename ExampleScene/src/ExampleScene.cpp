@@ -18,35 +18,43 @@ void drawScene() {
 }
 
 std::shared_ptr<Engine::Entity> create_scene_object(
-	const std::vector<Engine::Vertex>& vertices, 
-	const std::vector<uint32_t> indices, 
+	const std::vector<Engine::Vertex>& vertices,
+	const std::vector<uint32_t> indices,
 	Engine::DrawMode draw_mode = Engine::DrawMode::Triangles
 ) {
 	auto vbo_obj = Engine::VertexBuffer::createStatic(vertices);
-	auto vertex_vbo = std::make_shared<Engine::VertexBuffer>(std::move(vbo_obj));
-	auto indices_vbo = std::make_shared<Engine::IndexBuffer>(indices.data(), indices.size());
 
 	Engine::BufferLayout layout = {
 		{ "Position", Engine::ShaderDataType::Float3 },
 		{ "Color", Engine::ShaderDataType::Float4 },
 	};
 
-	vertex_vbo->setLayout(layout);
-	auto obj = Engine::Entity::createIndexedEntity({ vertex_vbo }, indices_vbo, draw_mode);
+	vbo_obj.setLayout(layout);
+
+	auto vertex_array = std::make_shared<Engine::VertexArray>();
+	vertex_array->addVertexBuffer(std::make_shared<Engine::VertexBuffer>(vbo_obj));
+	vertex_array->setIndexBuffer(std::make_shared<Engine::IndexBuffer>(indices.data(), indices.size()));
+	vertex_array->setDrawSpecs({ { (uint32_t)indices.size(), draw_mode } });
+
+	auto obj = Engine::Entity::createEntity(vertex_array);
 	return std::make_shared<Engine::Entity>(obj);
 }
 
 std::shared_ptr<Engine::Entity> create_scene_object(const std::vector<Engine::Vertex>& vertices, Engine::DrawMode draw_mode) {
 	auto vbo_obj = Engine::VertexBuffer::createStatic(vertices);
-	auto vertex_vbo = std::make_shared<Engine::VertexBuffer>(std::move(vbo_obj));
-
+	
 	Engine::BufferLayout layout = {
 		{ "Position", Engine::ShaderDataType::Float3 },
 		{ "Color", Engine::ShaderDataType::Float4 },
 	};
 
-	vertex_vbo->setLayout(layout);
-	auto obj = Engine::Entity::createEntity({ vertex_vbo }, vertices.size(), draw_mode);
+	vbo_obj.setLayout(layout);
+	
+	auto vertex_array = std::make_shared<Engine::VertexArray>();
+	vertex_array->addVertexBuffer(std::make_shared<Engine::VertexBuffer>(vbo_obj));
+	vertex_array->setDrawSpecs({ {(uint32_t)vertices.size(), draw_mode} });
+
+	auto obj = Engine::Entity::createEntity(vertex_array);
 	return std::make_shared<Engine::Entity>(obj);
 }
 
@@ -111,6 +119,7 @@ int main(int argc, char** argv)
 		"..\\ExampleScene\\shaders\\vertexShader.glsl",
 		"..\\ExampleScene\\shaders\\fragmentShader.glsl"
 		);
+	shader_program->bind();
 
 	scene = Engine::Scene(shader_program);
 	auto projection_matrix = glm::ortho(0.0f, (float)width, 0.0f, (float)height);
@@ -118,8 +127,8 @@ int main(int argc, char** argv)
 	// sky
 	auto sky = create_rectangle(
 		glm::vec3(-1.0, 1.0, 0.0),
-		glm::vec3(1.0, 1.0, 0.0),
-		glm::vec3(1.0, 0.0, 0.0),
+		glm::vec3( 1.0, 1.0, 0.0),
+		glm::vec3( 1.0, 0.0, 0.0),
 		glm::vec3(-1.0, 0.0, 0.0),
 		glm::vec4(0.0, 0.9, 1.0, 1.0)
 	);
@@ -179,6 +188,5 @@ int main(int argc, char** argv)
 	mountains->getModelMatrixHandler()->scaleBy(glm::vec3(width / 2, height / 2, 0));
 	scene.addObject(mountains);
 
-	shader_program->bind();
 	Engine::RendererUtils::startMainLoop();
 }

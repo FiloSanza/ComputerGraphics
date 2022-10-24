@@ -16,8 +16,10 @@ std::shared_ptr<Engine::VertexArray> vao;
 
 void init_vao() {
 	vao = std::make_shared<Engine::VertexArray>();
+	vao->bind();
+
 	auto vbo_obj = Engine::VertexBuffer::createStatic(vertices);
-	auto vertex_vbo = std::make_shared<Engine::VertexBuffer>(std::move(vbo_obj));
+	auto vertex_vbo = std::make_shared<Engine::VertexBuffer>(vbo_obj);
 	auto indices_vbo = std::make_shared<Engine::IndexBuffer>(indices, sizeof(indices) / sizeof(uint32_t));
 
 	Engine::BufferLayout layout = {
@@ -26,14 +28,15 @@ void init_vao() {
 	};
 
 	vertex_vbo->setLayout(layout);
-	vao->setIndexBuffer(indices_vbo);
 	vao->addVertexBuffer(vertex_vbo);
+	vao->setIndexBuffer(indices_vbo);
+	vao->setDrawSpecs({ { 6, Engine::DrawMode::Triangles } });
 }
 
 void drawScene() {
 	Engine::RendererUtils::clear(Engine::ClearOptions::ColorBuffer);
 	//Engine::RendererUtils::setPolygonModeDebug();
-	Engine::RendererUtils::drawIndexed(vao, Engine::DrawMode::Triangles);
+	Engine::RendererUtils::draw(vao);
 	Engine::RendererUtils::swapBuffers();
 }
 

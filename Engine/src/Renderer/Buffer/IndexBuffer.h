@@ -1,11 +1,13 @@
 #pragma once
 
+#include <vector>
 #include <stdint.h>
 
 namespace Engine {
 	class IndexBuffer {
 	public:
 		IndexBuffer(const uint32_t* indices, const uint32_t count);
+		IndexBuffer(const std::vector<uint32_t>& indices);
 		~IndexBuffer();
 
 		void bind();

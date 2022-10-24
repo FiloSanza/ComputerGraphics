@@ -22,7 +22,7 @@ namespace Engine {
 		static void startMainLoop();
 		static void swapBuffers();
 		static void clear(int mask);
-		static void draw(const std::shared_ptr<VertexArray> vertex_array);
+		static void draw(const std::shared_ptr<VertexArray>& vertex_array);
 		static void setPolygonModeDebug();
 		static void enableBlend();
 	};
