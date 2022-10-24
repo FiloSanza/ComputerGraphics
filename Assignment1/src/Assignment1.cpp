@@ -8,6 +8,7 @@ const int height = 800;
 
 std::shared_ptr<Engine::ShaderProgram> shader_program;
 Engine::Scene scene;
+std::shared_ptr<Engine::Window> window;
 
 struct User {
 	int x = 0;
@@ -33,8 +34,8 @@ std::shared_ptr<Engine::VertexArray> create_circle_vao(float center_x, float cen
 
 	int circle_size = vertices.size();
 
-	vertices.push_back({ glm::vec3( 0.5, 1.4, 0.0), color });
-	vertices.push_back({ glm::vec3(-0.5, 1.4, 0.0), color });
+	vertices.push_back({ glm::vec3(1.4,  0.5, 0.0), color });
+	vertices.push_back({ glm::vec3(1.4, -0.5, 0.0), color });
 	vertices.push_back({ glm::vec3(   0,   0, 0.0), color });
 
 	auto vbo_obj = Engine::VertexBuffer::createStatic(vertices);
@@ -71,9 +72,29 @@ void update_user_entity() {
 void drawScene() {
 	Engine::RendererUtils::clear(Engine::ClearOptions::ColorBuffer);
 	//Engine::RendererUtils::draw(vertex_array);
-	std::cout << user.x << " " << user.y << "\n";
 	scene.draw();
 	Engine::RendererUtils::swapBuffers();
+}
+
+void update_user_position(int value) {
+	if (window->isKeyPressed(Engine::Keyboard::Key::A)) {
+		user.x -= 10;
+	}
+
+	if (window->isKeyPressed(Engine::Keyboard::Key::S)) {
+		user.y -= 10;
+	}
+
+	if (window->isKeyPressed(Engine::Keyboard::Key::D)) {
+		user.x += 10;
+	}
+
+	if (window->isKeyPressed(Engine::Keyboard::Key::W)) {
+		user.y += 10;
+	}
+
+	update_user_entity();
+	Engine::RendererUtils::addTimerCallback(update_user_position, 50, 0);
 }
 
 int main(int argc, char** argv)
@@ -85,7 +106,7 @@ int main(int argc, char** argv)
 	options.title = "Assignment 1";
 	options.enableEvent(Engine::WindowEvent::KeyPress);
 	options.enableEvent(Engine::WindowEvent::MouseMovement);
-	Engine::Window window(options);
+	window = std::make_shared<Engine::Window>(options);
 	Engine::RendererUtils::setDisplayFunc(drawScene);
 	Engine::RendererUtils::setClearColor(glm::vec4(1.0, 0.0, 1.0, 1.0));
 
@@ -94,29 +115,10 @@ int main(int argc, char** argv)
 		"..\\Assignment1\\shaders\\fragmentShader.glsl"
 	);
 
-	Engine::EventsDispatcher::getInstance().registerCallback(Engine::EventType::KeyPressed, [&](const Engine::Event& evt) {
-		switch (evt.getKey()) {
-		case Engine::Keyboard::Key::A:
-			user.x-=10;
-			break;
-		case Engine::Keyboard::Key::S:
-			user.y-=10;
-			break;
-		case Engine::Keyboard::Key::D:
-			user.x+=10;
-			break;
-		case Engine::Keyboard::Key::W:
-			user.y+=10;
-			break;
-		default:
-			break;
-		}
-	});
-
 	Engine::EventsDispatcher::getInstance().registerCallback(Engine::EventType::MouseMoved, [&](const Engine::Event& evt) {
 		auto x = evt.getMouseX() - width / 2.0 - user.x;
 		auto y = height / 2 - evt.getMouseY() - user.y;
-		auto angle = -atan2(x, y) * 180.0 / PI;
+		auto angle = atan2(y, x) * 180.0 / PI;
 		user.angle = angle;
 
 		update_user_entity();
@@ -129,5 +131,6 @@ int main(int argc, char** argv)
 	scene = Engine::Scene(shader_program, { user.entity });
 	update_user_entity();
 
+	Engine::RendererUtils::addTimerCallback(update_user_position, 50, 0);
 	Engine::RendererUtils::startMainLoop();
 }
