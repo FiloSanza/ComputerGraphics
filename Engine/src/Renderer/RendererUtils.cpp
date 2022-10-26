@@ -1,4 +1,5 @@
 #include "RendererUtils.h"
+#include "Shader/ShaderProgram.h"
 
 namespace Engine {
 	void RendererUtils::init(int& argc, char** argv)
@@ -62,6 +63,11 @@ namespace Engine {
 	void RendererUtils::addTimerCallback(Callback callback, uint32_t timeout, int value)
 	{
 		glutTimerFunc(timeout, callback, value);
+	}
+
+	void RendererUtils::uploadUniformMat4(std::string name, glm::mat4 mat)
+	{
+		ShaderProgram::getBindedInstance().uploadUniformMat4(name, mat);
 	}
 
 	void RendererUtils::setPolygonModeDebug()

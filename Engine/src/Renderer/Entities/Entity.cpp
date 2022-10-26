@@ -1,6 +1,7 @@
 #include "Entity.h"
 
 #include "../RendererUtils.h"
+#include <algorithm>
 
 namespace Engine {
 	Entity::Entity(
@@ -16,6 +17,13 @@ namespace Engine {
 
 	void Entity::draw()
 	{
+		RendererUtils::uploadUniformMat4("Model", model_matrix->getModelMatrix());
+
+		if (projection_matrix_updated) {
+			RendererUtils::uploadUniformMat4("Projection", projection_matrix);
+			projection_matrix_updated = false;
+		}
+
 		RendererUtils::draw(vertex_array);
 	}
 
@@ -23,11 +31,6 @@ namespace Engine {
 	{
 		projection_matrix_updated = true;
 		projection_matrix = matrix;
-	}
-
-	void Entity::setProjectionMatrixUpdated()
-	{
-		projection_matrix_updated = false;
 	}
 
 	void Entity::updateVertexArray(std::shared_ptr<VertexArray> new_vertex_array)
@@ -38,21 +41,6 @@ namespace Engine {
 	std::shared_ptr<ModelMatrixHandler> Entity::getModelMatrixHandler()
 	{
 		return model_matrix;
-	}
-
-	glm::mat4 Entity::getModelMatrix()
-	{
-		return model_matrix->getModelMatrix();
-	}
-
-	glm::mat4 Entity::getProjectionMatrix() const
-	{
-		return projection_matrix;
-	}
-
-	bool Entity::needToUpdateProjectionMatrix() const
-	{
-		return projection_matrix_updated;
 	}
 
 	Entity Entity::createEntity(
@@ -86,6 +74,47 @@ namespace Engine {
 		// Check
 		model = glm::rotate(model, glm::radians(rotation), glm::vec3(0.0, 0.0, 1.0f));
 		return model;
+	}
+
+	glm::vec3 BoundingBox::bottomLeft() const
+	{
+		return bottom_left;
+	}
+
+	glm::vec3 BoundingBox::topRight() const
+	{
+		return top_right;
+	}
+
+	bool BoundingBox::checkIntersection(const BoundingBox& other) const
+	{
+		return bottom_left.x < other.topRight().x
+			&& top_right.x > other.bottomLeft().x
+			&& bottom_left.y < other.topRight().y
+			&& top_right.y > other.bottomLeft().y;
+	}
+
+	HittableEntity HittableEntity::createEntity(std::shared_ptr<VertexArray> vertex_array, glm::vec3 bottom_left, glm::vec3 top_right, ModelMatrixHandler model_matrix, glm::mat4 projection_matrix)
+	{
+		return HittableEntity(vertex_array, bottom_left, top_right, model_matrix, projection_matrix);
+	}
+
+	HittableEntity::HittableEntity(
+		std::shared_ptr<VertexArray> vertex_array, 
+		glm::vec3 bottom_left, 
+		glm::vec3 top_right, 
+		ModelMatrixHandler model_matrix, 
+		glm::mat4 projection_matrix
+	) : Entity(vertex_array, model_matrix, projection_matrix),
+		bounding_box(BoundingBox(bottom_left, top_right))
+	{ }
+
+	const BoundingBox& HittableEntity::getBoundingBox() const {
+		return bounding_box;
+	}
+
+	bool HittableEntity::hit(const std::shared_ptr<Hittable>& other) const {
+		return bounding_box.checkIntersection(other->getBoundingBox());
 	}
 
 }

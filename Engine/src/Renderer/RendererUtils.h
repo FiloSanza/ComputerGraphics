@@ -28,6 +28,7 @@ namespace Engine {
 		static void enableBlend();
 		static void updateWindow();
 		static void addTimerCallback(Callback callback, uint32_t timeout, int value);
+		static void uploadUniformMat4(std::string name, glm::mat4 mat);
 	};
 
 }

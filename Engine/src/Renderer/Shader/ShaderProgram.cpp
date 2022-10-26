@@ -27,6 +27,7 @@ namespace Engine {
 	void ShaderProgram::bind() const
 	{
 		glUseProgram(id);
+		binded_instance = *this;
 	}
 
 	void ShaderProgram::unbind() const
@@ -34,7 +35,7 @@ namespace Engine {
 		glUseProgram(0);
 	}
 
-	void ShaderProgram::uploadUniformMat4(std::string name, glm::mat4 mat)
+	void ShaderProgram::uploadUniformMat4(std::string name, glm::mat4 mat) const
 	{
 		auto location = glGetUniformLocation(id, name.c_str());
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(mat));
@@ -123,5 +124,10 @@ namespace Engine {
 		default:
 			return "";
 		}
+	}
+	
+	const ShaderProgram& ShaderProgram::getBindedInstance()
+	{
+		return binded_instance;
 	}
 }
