@@ -49,7 +49,7 @@ namespace Engine {
 
 	class Hittable {
 	public:
-		virtual bool hit(const std::shared_ptr<Hittable>& other) const = 0;
+		virtual bool hit(std::shared_ptr<Hittable> other) const = 0;
 		virtual const BoundingBox& getBoundingBox() const = 0;
 	};
 
@@ -86,11 +86,11 @@ namespace Engine {
 
 	};
 
-	class HittableEntity : public Entity, Hittable {
+	class HittableEntity : public Entity, public Hittable {
 	public:
 		HittableEntity() = delete;
 
-		bool hit(const std::shared_ptr<Hittable>& other) const override;
+		bool hit(std::shared_ptr<Hittable> other) const override;
 		const BoundingBox& getBoundingBox() const override;
 
 		static HittableEntity createEntity(

@@ -1,4 +1,6 @@
 #include <iostream>
+#include <algorithm>
+#include <ranges>
 #include "Engine/engine.h"
 
 const float PI = 3.14159265359f;
@@ -6,15 +8,11 @@ const float TWO_PI = 2 * PI;
 const int width = 1600;
 const int height = 800;
 
-std::shared_ptr<Engine::ShaderProgram> shader_program;
-Engine::Scene scene;
-std::shared_ptr<Engine::Window> window;
-
 struct User {
 	int x = 0;
 	int y = 0;
 	double angle = 0.0;
-	std::shared_ptr<Engine::Entity> entity;
+	std::shared_ptr<Engine::HittableEntity> entity;
 };
 
 struct Bullet {
@@ -22,14 +20,57 @@ struct Bullet {
 	float y = 0;
 	float delta_x = 0;
 	float delta_y = 0;
-	std::shared_ptr<Engine::Entity> entity;
+	std::shared_ptr<Engine::HittableEntity> entity;
 };
 
-std::vector<Bullet> bullets;
+struct Scene {
+	User user;
+	std::vector<Bullet> bullets;
+	std::shared_ptr<Engine::HittableEntity> background;
 
-User user;
 
-std::shared_ptr<Engine::Entity> create_bullet(float center_x, float center_y, float radius, int n_points) {	
+	void draw() {
+		background->draw();
+		user.entity->draw();
+		std::for_each(bullets.begin(), bullets.end(), [](const auto& b) { 
+			b.entity->draw(); 
+		});
+	}
+
+	void update_user_entity() {
+		const auto proj_matrix = user.entity->getModelMatrixHandler();
+		proj_matrix->translateBy(glm::vec3(width / 2 + user.x, height / 2 + user.y, 0.0));
+		proj_matrix->scaleBy(glm::vec3(100.0, 100.0, 1.0));
+		proj_matrix->rotate(user.angle);
+		Engine::RendererUtils::updateWindow();
+	}
+
+	void update_bullets() {
+		std::vector<Bullet> active_bullets;
+
+		std::ranges::copy_if(bullets, std::back_inserter(active_bullets), [&](Bullet b) {
+			return b.entity->hit(background);
+		});
+
+		bullets.swap(active_bullets);
+
+		for (auto& bullet : bullets) {
+			auto model_mat = bullet.entity->getModelMatrixHandler();
+			bullet.x += bullet.delta_x * 10;
+			bullet.y += bullet.delta_y * 10;
+			model_mat->translateBy(glm::vec3(bullet.x, bullet.y, 0));
+		}
+
+		std::cerr << "ACTIVE BULLETS: " << bullets.size() << "\n";
+	}
+};
+
+
+std::shared_ptr<Engine::ShaderProgram> shader_program;
+Scene scene;
+std::shared_ptr<Engine::Window> window;
+
+std::shared_ptr<Engine::HittableEntity> create_bullet(float center_x, float center_y, float radius, int n_points) {	
 	auto color = glm::vec4(1, 0, 0, 1.0);
 	std::vector<Engine::Vertex> vertices;
 	vertices.push_back({ glm::vec3(center_x, center_y, 0), color });
@@ -56,7 +97,7 @@ std::shared_ptr<Engine::Entity> create_bullet(float center_x, float center_y, fl
 	});
 
 	auto obj = Engine::Entity::createEntity(vertex_array);
-	return std::make_shared<Engine::Entity>(obj);
+	return std::make_shared<Engine::HittableEntity>(obj);
 }
 
 std::shared_ptr<Engine::VertexArray> create_user(float center_x, float center_y, float radius, int n_points) {
@@ -95,19 +136,12 @@ std::shared_ptr<Engine::VertexArray> create_user(float center_x, float center_y,
 	return vertex_array;
 }
 
-std::shared_ptr<Engine::Entity> generate_user(float center_x, float center_y, float radius, int n_points) {
+std::shared_ptr<Engine::HittableEntity> generate_user(float center_x, float center_y, float radius, int n_points) {
 	auto vao = create_user(center_x, center_y, radius, n_points);
-	auto obj = Engine::Entity::createEntity(vao);
-	return std::make_shared<Engine::Entity>(obj);
+	auto obj = Engine::HittableEntity::createEntity(vao);
+	return std::make_shared<Engine::HittableEntity>(obj);
 }
 
-void update_user_entity() {
-	const auto proj_matrix = user.entity->getModelMatrixHandler();
-	proj_matrix->translateBy(glm::vec3(width / 2 + user.x, height / 2 + user.y, 0.0));
-	proj_matrix->scaleBy(glm::vec3(100.0, 100.0, 1.0));
-	proj_matrix->rotate(user.angle);
-	Engine::RendererUtils::updateWindow();
-}
 
 void drawScene() {
 	Engine::RendererUtils::clear(Engine::ClearOptions::ColorBuffer);
@@ -118,33 +152,27 @@ void drawScene() {
 
 void update_user_position(int value) {
 	if (window->isKeyPressed(Engine::Keyboard::Key::A)) {
-		user.x -= 10;
+		scene.user.x -= 10;
 	}
 
 	if (window->isKeyPressed(Engine::Keyboard::Key::S)) {
-		user.y -= 10;
+		scene.user.y -= 10;
 	}
 
 	if (window->isKeyPressed(Engine::Keyboard::Key::D)) {
-		user.x += 10;
+		scene.user.x += 10;
 	}
 
 	if (window->isKeyPressed(Engine::Keyboard::Key::W)) {
-		user.y += 10;
+		scene.user.y += 10;
 	}
 
-	update_user_entity();
+	scene.update_user_entity();
 	Engine::RendererUtils::addTimerCallback(update_user_position, 25, 0);
 }
 
 void update_bullets(int value) {
-	for (auto& bullet : bullets) {
-		auto model_mat = bullet.entity->getModelMatrixHandler();
-		bullet.x += bullet.delta_x * 10;
-		bullet.y += bullet.delta_y * 10;
-		model_mat->translateBy(glm::vec3(bullet.x, bullet.y, 0));
-	}
-
+	scene.update_bullets();
 	Engine::RendererUtils::updateWindow();
 	Engine::RendererUtils::addTimerCallback(update_bullets, 25, 0);
 }
@@ -169,12 +197,12 @@ int main(int argc, char** argv)
 	);
 
 	Engine::EventsDispatcher::getInstance().registerCallback(Engine::EventType::MouseMoved, [&](const Engine::Event& evt) {
-		auto x = evt.getMouseX() - width / 2.0 - user.x;
-		auto y = height / 2 - evt.getMouseY() - user.y;
+		auto x = evt.getMouseX() - width / 2.0 - scene.user.x;
+		auto y = height / 2 - evt.getMouseY() - scene.user.y;
 		auto angle = atan2(y, x) * 180.0 / PI;
-		user.angle = angle;
+		scene.user.angle = angle;
 
-		update_user_entity();
+		scene.update_user_entity();
 	});
 
 	Engine::EventsDispatcher::getInstance().registerCallback(Engine::EventType::MouseClick, [&](const Engine::Event& evt) {
@@ -184,24 +212,19 @@ int main(int argc, char** argv)
 
 		auto click_x = evt.getMouseX() - width / 2.0;
 		auto click_y = height / 2.0 - evt.getMouseY();
-		auto delta = glm::normalize(glm::vec3(click_x - user.x, click_y - user.y, 0));
+		auto delta = glm::normalize(glm::vec3(click_x - scene.user.x, click_y - scene.user.y, 0));
 
-		auto bullet = create_bullet(0, 0, 1, 4);
-		bullet->setProjectionMatrix(glm::ortho(0.0f, (float)width, 0.0f, (float)height));
-		bullet->getModelMatrixHandler()->scaleBy(glm::vec3(20, 20, 0));
-		scene.addObject(bullet);
-
-		bullets.push_back({
-			user.x + width / 2.0f, user.y + height / 2.0f, delta.x, delta.y, bullet
-		});
+		auto bullet_ent = create_bullet(0, 0, 1, 4);
+		bullet_ent->setProjectionMatrix(glm::ortho(0.0f, (float)width, 0.0f, (float)height));
+		bullet_ent->getModelMatrixHandler()->scaleBy(glm::vec3(20, 20, 0));
+		scene.bullets.push_back({ scene.user.x + width / 2.0f, scene.user.y + height / 2.0f, delta.x, delta.y, bullet_ent });
 	});
 	
-	user.entity = generate_user(0, 0, 1, 100);
-	user.entity->setProjectionMatrix(glm::ortho(0.0f, (float)width, 0.0f, (float)height));
+	scene.user.entity = generate_user(0, 0, 1, 100);
+	scene.user.entity->setProjectionMatrix(glm::ortho(0.0f, (float)width, 0.0f, (float)height));
 
 	shader_program->bind();
-	scene = Engine::Scene(shader_program, { user.entity });
-	update_user_entity();
+	scene.update_user_entity();
 
 	Engine::RendererUtils::addTimerCallback(update_user_position, 25, 0);
 	Engine::RendererUtils::addTimerCallback(update_bullets, 25, 0);

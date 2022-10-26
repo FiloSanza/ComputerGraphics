@@ -113,7 +113,7 @@ namespace Engine {
 		return bounding_box;
 	}
 
-	bool HittableEntity::hit(const std::shared_ptr<Hittable>& other) const {
+	bool HittableEntity::hit(std::shared_ptr<Hittable> other) const {
 		return bounding_box.checkIntersection(other->getBoundingBox());
 	}
 
