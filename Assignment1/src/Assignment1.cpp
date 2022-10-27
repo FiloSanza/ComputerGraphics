@@ -27,14 +27,18 @@ struct Scene {
 	User user;
 	std::vector<Bullet> bullets;
 	std::shared_ptr<Engine::HittableEntity> background;
-
+	std::shared_ptr<Engine::HittableEntity> target;
+	bool target_destroyed = false;
 
 	void draw() {
 		background->draw();
-		user.entity->draw();
 		std::for_each(bullets.begin(), bullets.end(), [](const auto& b) { 
 			b.entity->draw(); 
 		});
+		user.entity->draw();
+		if (!target_destroyed) {
+			target->draw();
+		}
 	}
 
 	void update_user_entity() {
@@ -54,6 +58,17 @@ struct Scene {
 
 		bullets.swap(active_bullets);
 
+		// Check if a bullet hits the target
+		auto hit = std::find_if(bullets.begin(), bullets.end(), [&](const Bullet& b) {
+			return b.entity->hit(target);
+		});
+
+		if (hit != bullets.end() && !target_destroyed) {
+			std::cout << "HIT\n";
+			bullets.erase(hit);
+			target_destroyed = true;
+		}
+
 		for (auto& bullet : bullets) {
 			auto model_mat = bullet.entity->getModelMatrixHandler();
 			bullet.x += bullet.delta_x * 10;
@@ -65,13 +80,12 @@ struct Scene {
 	}
 };
 
-
 std::shared_ptr<Engine::ShaderProgram> shader_program;
 Scene scene;
 std::shared_ptr<Engine::Window> window;
 
 std::shared_ptr<Engine::HittableEntity> create_bullet(float center_x, float center_y, float radius, int n_points) {	
-	auto color = glm::vec4(1, 0, 0, 1.0);
+	auto color = glm::vec4(0, 0, 1, 1.0);
 	std::vector<Engine::Vertex> vertices;
 	vertices.push_back({ glm::vec3(center_x, center_y, 0), color });
 
@@ -171,6 +185,36 @@ std::shared_ptr<Engine::HittableEntity> generate_user(float center_x, float cent
 	return std::make_shared<Engine::HittableEntity>(obj);
 }
 
+std::shared_ptr<Engine::HittableEntity> generate_target(float center_x, float center_y, float radius, int n_points) {
+	auto color = glm::vec4(1, 0, 0, 1.0);
+	std::vector<Engine::Vertex> vertices;
+	vertices.push_back({ glm::vec3(center_x, center_y, 0), color });
+
+	float step = TWO_PI / n_points;
+	for (int i = 0; i <= n_points; i++) {
+		const float t = step * i;
+		const float x = cos(t) * radius + center_x;
+		const float y = sin(t) * radius + center_y;
+		vertices.push_back({ glm::vec3(x, y, 0), color });
+	}
+
+	auto vbo_obj = Engine::VertexBuffer::createStatic(vertices);
+	auto vertex_vbo = std::make_shared<Engine::VertexBuffer>(std::move(vbo_obj));
+	auto vertex_array = std::make_shared<Engine::VertexArray>();
+
+	vertex_vbo->setLayout({
+		{ "Position", Engine::ShaderDataType::Float3 },
+		{ "Color", Engine::ShaderDataType::Float4 },
+	});
+	vertex_array->addVertexBuffer(vertex_vbo);
+	vertex_array->setDrawSpecs({
+		{ (uint32_t)vertices.size(), Engine::DrawMode::TriangleFan },
+	});
+
+	auto obj = Engine::HittableEntity::createEntity(vertex_array, glm::vec3(0, 0, 0), radius);
+	return std::make_shared<Engine::HittableEntity>(obj);
+}
+
 
 void drawScene() {
 	Engine::RendererUtils::clear(Engine::ClearOptions::ColorBuffer);
@@ -250,13 +294,18 @@ int main(int argc, char** argv)
 	});
 
 	scene.background = generate_background();
-	
+
+	scene.target = generate_target(0, 0, 1, 50);
+	scene.target->setProjectionMatrix(glm::ortho(0.0f, (float)width, 0.0f, (float)height));
+	scene.target->getModelMatrixHandler()->scaleBy(glm::vec3(50, 50, 0));
+	scene.target->getModelMatrixHandler()->translateBy(glm::vec3(400, 400, 0));
+
 	scene.user.entity = generate_user(0, 0, 1, 100);
 	scene.user.entity->setProjectionMatrix(glm::ortho(0.0f, (float)width, 0.0f, (float)height));
 
 	scene.background->setProjectionMatrix(glm::ortho(0.0f, (float)width, 0.0f, (float)height));
 	scene.background->getModelMatrixHandler()->scaleBy(glm::vec3(width / 2, height / 2, 0));
-	scene.background->getModelMatrixHandler()->translateBy(glm::vec3(width / 2, height / 2, 0));
+	scene.background->getModelMatrixHandler()->translateBy(glm::vec3(width / 2, height / 2, 0.0));
 
 	shader_program->bind();
 	scene.update_user_entity();
