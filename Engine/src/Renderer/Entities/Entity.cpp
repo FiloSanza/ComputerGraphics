@@ -113,8 +113,8 @@ namespace Engine {
 	{
 		const float limit = getRadius() + other.getRadius();
 		const float distance = glm::length(getCenter() - other.getCenter());
-		std::cout << "My center: [" << getCenter().x << ", " << getCenter().y << ", " << getCenter().z << "] Other center: [" << other.getCenter().x << ", " << other.getCenter().y << ", " << other.getCenter().z << "]\n";
-		std::cout << "Distance: " << distance << " Limit: " << limit << "\n";
+		//std::cout << "My center: [" << getCenter().x << ", " << getCenter().y << ", " << getCenter().z << "] Other center: [" << other.getCenter().x << ", " << other.getCenter().y << ", " << other.getCenter().z << "]\n";
+		//std::cout << "Distance: " << distance << " Limit: " << limit << "\n";
 
 		return distance < limit;
 	}

@@ -64,7 +64,7 @@ struct Scene {
 		});
 
 		if (hit != bullets.end() && !target_destroyed) {
-			std::cout << "HIT\n";
+			//std::cout << "HIT\n";
 			bullets.erase(hit);
 			target_destroyed = true;
 		}
@@ -76,7 +76,7 @@ struct Scene {
 			model_mat->translateBy(glm::vec3(bullet.x, bullet.y, 0));
 		}
 
-		std::cerr << "ACTIVE BULLETS: " << bullets.size() << "\n";
+		//std::cerr << "ACTIVE BULLETS: " << bullets.size() << "\n";
 	}
 };
 
