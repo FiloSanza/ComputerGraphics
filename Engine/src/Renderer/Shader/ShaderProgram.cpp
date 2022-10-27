@@ -27,7 +27,7 @@ namespace Engine {
 	void ShaderProgram::bind() const
 	{
 		glUseProgram(id);
-		binded_instance = *this;
+		active_program = this;
 	}
 
 	void ShaderProgram::unbind() const
@@ -39,6 +39,11 @@ namespace Engine {
 	{
 		auto location = glGetUniformLocation(id, name.c_str());
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(mat));
+	}
+
+	const ShaderProgram* ShaderProgram::getActiveInstance()
+	{
+		return active_program;
 	}
 
 	uint32_t ShaderProgram::compileShader(std::string path, ShaderType type)
@@ -125,9 +130,6 @@ namespace Engine {
 			return "";
 		}
 	}
-	
-	const ShaderProgram& ShaderProgram::getBindedInstance()
-	{
-		return binded_instance;
-	}
+
+	const ShaderProgram* ShaderProgram::active_program = nullptr;
 }

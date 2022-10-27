@@ -2,6 +2,8 @@
 
 #include "../RendererUtils.h"
 #include <algorithm>
+#include <iostream>
+
 
 namespace Engine {
 	Entity::Entity(
@@ -66,7 +68,22 @@ namespace Engine {
 		rotation = angle;
 	}
 
-	glm::mat4 ModelMatrixHandler::getModelMatrix()
+	float ModelMatrixHandler::getRotation() const
+	{
+		return rotation;
+	}
+
+	glm::vec3 ModelMatrixHandler::getScale() const
+	{
+		return scale;
+	}
+
+	glm::vec3 ModelMatrixHandler::getTranslation() const
+	{
+		return translation;
+	}
+
+	glm::mat4 ModelMatrixHandler::getModelMatrix() const
 	{
 		glm::mat4 model = glm::mat4(1.0f);
 		model = glm::translate(model, translation);
@@ -76,38 +93,47 @@ namespace Engine {
 		return model;
 	}
 
-	glm::vec3 BoundingBox::bottomLeft() const
+	glm::vec3 BoundingBox::getCenter() const
 	{
-		return bottom_left;
+		const auto model = model_matrix->getModelMatrix();
+		const auto transformed_center = model * glm::vec4(center, 1.0);
+		return glm::vec3(
+			transformed_center.x,
+			transformed_center.y,
+			transformed_center.z
+		);
 	}
 
-	glm::vec3 BoundingBox::topRight() const
+	float BoundingBox::getRadius() const
 	{
-		return top_right;
+		return radius * glm::length(model_matrix->getScale());
 	}
 
 	bool BoundingBox::checkIntersection(const BoundingBox& other) const
 	{
-		return bottom_left.x < other.topRight().x
-			&& top_right.x > other.bottomLeft().x
-			&& bottom_left.y < other.topRight().y
-			&& top_right.y > other.bottomLeft().y;
+		const float limit = getRadius() + other.getRadius();
+		const float distance = glm::length(getCenter() - other.getCenter());
+		std::cout << "My center: [" << getCenter().x << ", " << getCenter().y << ", " << getCenter().z << "] Other center: [" << other.getCenter().x << ", " << other.getCenter().y << ", " << other.getCenter().z << "]\n";
+		std::cout << "Distance: " << distance << " Limit: " << limit << "\n";
+
+		return distance < limit;
 	}
 
-	HittableEntity HittableEntity::createEntity(std::shared_ptr<VertexArray> vertex_array, glm::vec3 bottom_left, glm::vec3 top_right, ModelMatrixHandler model_matrix, glm::mat4 projection_matrix)
+	HittableEntity HittableEntity::createEntity(std::shared_ptr<VertexArray> vertex_array, glm::vec3 center, float radius, ModelMatrixHandler model_matrix, glm::mat4 projection_matrix)
 	{
-		return HittableEntity(vertex_array, bottom_left, top_right, model_matrix, projection_matrix);
+		return HittableEntity(vertex_array, center, radius, model_matrix, projection_matrix);
 	}
 
 	HittableEntity::HittableEntity(
 		std::shared_ptr<VertexArray> vertex_array, 
-		glm::vec3 bottom_left, 
-		glm::vec3 top_right, 
+		glm::vec3 center, 
+		float radius, 
 		ModelMatrixHandler model_matrix, 
 		glm::mat4 projection_matrix
-	) : Entity(vertex_array, model_matrix, projection_matrix),
-		bounding_box(BoundingBox(bottom_left, top_right))
-	{ }
+	) : Entity(vertex_array, model_matrix, projection_matrix)
+	{
+		bounding_box = BoundingBox(center, radius, this->model_matrix);
+	}
 
 	const BoundingBox& HittableEntity::getBoundingBox() const {
 		return bounding_box;

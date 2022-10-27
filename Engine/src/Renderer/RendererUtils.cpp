@@ -67,7 +67,7 @@ namespace Engine {
 
 	void RendererUtils::uploadUniformMat4(std::string name, glm::mat4 mat)
 	{
-		ShaderProgram::getBindedInstance().uploadUniformMat4(name, mat);
+		ShaderProgram::getActiveInstance()->uploadUniformMat4(name, mat);
 	}
 
 	void RendererUtils::setPolygonModeDebug()

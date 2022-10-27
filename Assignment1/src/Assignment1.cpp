@@ -96,7 +96,7 @@ std::shared_ptr<Engine::HittableEntity> create_bullet(float center_x, float cent
 		{ (uint32_t)vertices.size(), Engine::DrawMode::TriangleFan },
 	});
 
-	auto obj = Engine::Entity::createEntity(vertex_array);
+	auto obj = Engine::HittableEntity::createEntity(vertex_array, glm::vec3(0, 0, 0), radius);
 	return std::make_shared<Engine::HittableEntity>(obj);
 }
 
@@ -136,16 +136,45 @@ std::shared_ptr<Engine::VertexArray> create_user(float center_x, float center_y,
 	return vertex_array;
 }
 
+std::shared_ptr<Engine::HittableEntity> generate_background() {
+	std::vector<Engine::Vertex> vertices = {
+		{ glm::vec3(-1, -1, 0), glm::vec4(1.0, 1.0, 1.0, 1.0) },
+		{ glm::vec3( 1, -1, 0), glm::vec4(1.0, 1.0, 1.0, 1.0) },
+		{ glm::vec3( 1,  1, 0), glm::vec4(1.0, 1.0, 1.0, 1.0) },
+		{ glm::vec3(-1,  1, 0), glm::vec4(1.0, 1.0, 1.0, 1.0) },
+	};
+
+	std::vector<uint32_t> indices = { 0, 1, 2, 0, 2, 3 };
+
+	auto vbo_obj = Engine::VertexBuffer::createStatic(vertices);
+	auto vertex_vbo = std::make_shared<Engine::VertexBuffer>(std::move(vbo_obj));
+	auto vertex_array = std::make_shared<Engine::VertexArray>();
+	auto idx_buff = std::make_shared<Engine::IndexBuffer>(indices);
+
+	vertex_vbo->setLayout({
+		{ "Position", Engine::ShaderDataType::Float3 },
+		{ "Color", Engine::ShaderDataType::Float4 },
+	});
+	vertex_array->addVertexBuffer(vertex_vbo);
+	vertex_array->setIndexBuffer(idx_buff);
+	vertex_array->setDrawSpecs({
+		{ (uint32_t)indices.size(), Engine::DrawMode::Triangles },
+	});
+
+	auto obj = Engine::HittableEntity::createEntity(vertex_array, glm::vec3(0, 0, 0), 1);
+	return std::make_shared<Engine::HittableEntity>(obj);
+}
+
 std::shared_ptr<Engine::HittableEntity> generate_user(float center_x, float center_y, float radius, int n_points) {
 	auto vao = create_user(center_x, center_y, radius, n_points);
-	auto obj = Engine::HittableEntity::createEntity(vao);
+	auto obj = Engine::HittableEntity::createEntity(vao, glm::vec3(center_x, center_y, 0), radius);
 	return std::make_shared<Engine::HittableEntity>(obj);
 }
 
 
 void drawScene() {
 	Engine::RendererUtils::clear(Engine::ClearOptions::ColorBuffer);
-	//Engine::RendererUtils::draw(vertex_array);
+	//Engine::RendererUtils::setPolygonModeDebug();
 	scene.draw();
 	Engine::RendererUtils::swapBuffers();
 }
@@ -219,9 +248,15 @@ int main(int argc, char** argv)
 		bullet_ent->getModelMatrixHandler()->scaleBy(glm::vec3(20, 20, 0));
 		scene.bullets.push_back({ scene.user.x + width / 2.0f, scene.user.y + height / 2.0f, delta.x, delta.y, bullet_ent });
 	});
+
+	scene.background = generate_background();
 	
 	scene.user.entity = generate_user(0, 0, 1, 100);
 	scene.user.entity->setProjectionMatrix(glm::ortho(0.0f, (float)width, 0.0f, (float)height));
+
+	scene.background->setProjectionMatrix(glm::ortho(0.0f, (float)width, 0.0f, (float)height));
+	scene.background->getModelMatrixHandler()->scaleBy(glm::vec3(width / 2, height / 2, 0));
+	scene.background->getModelMatrixHandler()->translateBy(glm::vec3(width / 2, height / 2, 0));
 
 	shader_program->bind();
 	scene.update_user_entity();

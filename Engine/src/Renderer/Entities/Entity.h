@@ -25,7 +25,10 @@ namespace Engine {
 		 */
 		void rotate(float angle);
 
-		glm::mat4 getModelMatrix();
+		float getRotation() const;
+		glm::vec3 getScale() const;
+		glm::vec3 getTranslation() const;
+		glm::mat4 getModelMatrix() const;
 
 	private:
 		glm::vec3 translation;
@@ -35,16 +38,18 @@ namespace Engine {
 
 	class BoundingBox {
 	public:
-		BoundingBox() = delete;
-		BoundingBox(glm::vec3 bottom_left, glm::vec3 top_right)
-			: bottom_left(bottom_left), top_right(top_right) {}
+		BoundingBox() : center(glm::vec3(0)), radius(0) {}
+		BoundingBox(glm::vec3 center, float radius, std::shared_ptr<ModelMatrixHandler> model_matrix)
+			: center(center), radius(radius), model_matrix(model_matrix) {}
 
-		glm::vec3 bottomLeft() const;
-		glm::vec3 topRight() const;
+		glm::vec3 getCenter() const;
+		float getRadius() const;
+
 		bool checkIntersection(const BoundingBox& other) const;
 	private:
-		glm::vec3 bottom_left;
-		glm::vec3 top_right;
+		std::shared_ptr<ModelMatrixHandler> model_matrix;
+		glm::vec3 center;
+		float radius;
 	};
 
 	class Hittable {
@@ -95,16 +100,16 @@ namespace Engine {
 
 		static HittableEntity createEntity(
 			std::shared_ptr<VertexArray> vertex_array,
-			glm::vec3 bottom_left,
-			glm::vec3 top_right,
+			glm::vec3 center,
+			float radius,
 			ModelMatrixHandler model_matrix = ModelMatrixHandler(),
 			glm::mat4 projection_matrix = glm::mat4()
 		);
 	private:
 		HittableEntity(
 			std::shared_ptr<VertexArray> vertex_array,
-			glm::vec3 bottom_left,
-			glm::vec3 top_right,
+			glm::vec3 center,
+			float radius,
 			ModelMatrixHandler model_matrix,
 			glm::mat4 projection_matrix
 		);
