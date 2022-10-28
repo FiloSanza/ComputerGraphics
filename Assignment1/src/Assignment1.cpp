@@ -1,10 +1,10 @@
 #include <iostream>
 #include <algorithm>
 #include <ranges>
+#include <numbers>
 #include "Engine/engine.h"
+#include "Geometry/Shapes.h"
 
-const float PI = 3.14159265359f;
-const float TWO_PI = 2 * PI;
 const int width = 1600;
 const int height = 800;
 
@@ -86,16 +86,7 @@ std::shared_ptr<Engine::Window> window;
 
 std::shared_ptr<Engine::HittableEntity> create_bullet(float center_x, float center_y, float radius, int n_points) {	
 	auto color = glm::vec4(0, 0, 1, 1.0);
-	std::vector<Engine::Vertex> vertices;
-	vertices.push_back({ glm::vec3(center_x, center_y, 0), color });
-
-	float step = TWO_PI / n_points;
-	for (int i = 0; i <= n_points; i++) {
-		const float t = step * i;
-		const float x = cos(t) * radius + center_x;
-		const float y = sin(t) * radius + center_y;
-		vertices.push_back({ glm::vec3(x, y, 0), color });
-	}
+	auto vertices = Geometry::Shapes::circle({ glm::vec3(center_x, center_y, 0), color }, radius, n_points, color);
 
 	auto vbo_obj = Engine::VertexBuffer::createStatic(vertices);
 	auto vertex_vbo = std::make_shared<Engine::VertexBuffer>(std::move(vbo_obj));
@@ -116,16 +107,7 @@ std::shared_ptr<Engine::HittableEntity> create_bullet(float center_x, float cent
 
 std::shared_ptr<Engine::VertexArray> create_user(float center_x, float center_y, float radius, int n_points) {
 	auto color = glm::vec4(0, 0, 1, 1.0);
-	std::vector<Engine::Vertex> vertices;
-	vertices.push_back({ glm::vec3(center_x, center_y, 0), color });
-
-	float step = TWO_PI / n_points;
-	for (int i = 0; i <= n_points; i++) {
-		const float t = step * i;
-		const float x = cos(t) * radius;
-		const float y = sin(t) * radius;
-		vertices.push_back({ glm::vec3(x, y, 0), color });
-	}
+	auto vertices = Geometry::Shapes::circle({ glm::vec3(center_x, center_y, 0), color }, radius, n_points, color);
 
 	int circle_size = vertices.size();
 
@@ -187,16 +169,7 @@ std::shared_ptr<Engine::HittableEntity> generate_user(float center_x, float cent
 
 std::shared_ptr<Engine::HittableEntity> generate_target(float center_x, float center_y, float radius, int n_points) {
 	auto color = glm::vec4(1, 0, 0, 1.0);
-	std::vector<Engine::Vertex> vertices;
-	vertices.push_back({ glm::vec3(center_x, center_y, 0), color });
-
-	float step = TWO_PI / n_points;
-	for (int i = 0; i <= n_points; i++) {
-		const float t = step * i;
-		const float x = cos(t) * radius + center_x;
-		const float y = sin(t) * radius + center_y;
-		vertices.push_back({ glm::vec3(x, y, 0), color });
-	}
+	auto vertices = Geometry::Shapes::circle({ glm::vec3(center_x, center_y, 0), color }, radius, n_points, color);
 
 	auto vbo_obj = Engine::VertexBuffer::createStatic(vertices);
 	auto vertex_vbo = std::make_shared<Engine::VertexBuffer>(std::move(vbo_obj));
@@ -272,7 +245,7 @@ int main(int argc, char** argv)
 	Engine::EventsDispatcher::getInstance().registerCallback(Engine::EventType::MouseMoved, [&](const Engine::Event& evt) {
 		auto x = evt.getMouseX() - width / 2.0 - scene.user.x;
 		auto y = height / 2 - evt.getMouseY() - scene.user.y;
-		auto angle = atan2(y, x) * 180.0 / PI;
+		auto angle = atan2(y, x) * 180.0 / std::numbers::pi;
 		scene.user.angle = angle;
 
 		scene.update_user_entity();
