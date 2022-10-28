@@ -7,7 +7,7 @@
 namespace Geometry {
 	class Hermite {
 	public:
-		static std::vector<Engine::Vertex> interp_into_vertices(
+		static std::vector<Engine::Vertex> interpIntoVertices(
 			const std::vector<float>& t,
 			const std::vector<glm::vec3>& points,
 			Engine::Vertex center,

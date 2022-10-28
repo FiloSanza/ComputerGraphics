@@ -146,16 +146,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Sprites\Ghost.cpp" />
+    <ClCompile Include="src\Sprites\SpriteLoader.cpp" />
     <ClCompile Include="src\Geometry\Shapes.cpp" />
     <ClCompile Include="src\Assignment1.cpp" />
     <ClCompile Include="src\Geometry\Hermite.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="shaders\fragmentShader.glsl" />
-    <None Include="shaders\vertexShader.glsl" />
+    <None Include="res\shaders\fragmentShader.glsl" />
+    <None Include="res\shaders\vertexShader.glsl" />
+    <None Include="res\sprites\ghost.csv" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Sprites\Ghost.h" />
+    <ClInclude Include="src\Sprites\Sprite.h" />
+    <ClInclude Include="src\Sprites\SpriteLoader.h" />
     <ClInclude Include="src\Geometry\Shapes.h" />
     <ClInclude Include="src\Geometry\Hermite.h" />
   </ItemGroup>

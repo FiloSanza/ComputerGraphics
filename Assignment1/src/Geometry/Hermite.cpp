@@ -39,7 +39,7 @@ namespace Geometry {
 		return derive(idx, t, delta_prev_x, delta_next_x);
 	}
 
-	std::vector<Engine::Vertex> Hermite::interp_into_vertices(
+	std::vector<Engine::Vertex> Hermite::interpIntoVertices(
 		const std::vector<float>& t,
 		const std::vector<glm::vec3>& points,
 		Engine::Vertex center,

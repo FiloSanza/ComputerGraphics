@@ -4,6 +4,7 @@
 #include <numbers>
 #include "Engine/engine.h"
 #include "Geometry/Shapes.h"
+#include "Sprites/Ghost.h"
 
 const int width = 1600;
 const int height = 800;
@@ -27,8 +28,7 @@ struct Scene {
 	User user;
 	std::vector<Bullet> bullets;
 	std::shared_ptr<Engine::HittableEntity> background;
-	std::shared_ptr<Engine::HittableEntity> target;
-	bool target_destroyed = false;
+	Sprites::Ghost target;
 
 	void draw() {
 		background->draw();
@@ -36,8 +36,8 @@ struct Scene {
 			b.entity->draw(); 
 		});
 		user.entity->draw();
-		if (!target_destroyed) {
-			target->draw();
+		if (target.isActive()) {
+			target.draw();
 		}
 	}
 
@@ -60,13 +60,13 @@ struct Scene {
 
 		// Check if a bullet hits the target
 		auto hit = std::find_if(bullets.begin(), bullets.end(), [&](const Bullet& b) {
-			return b.entity->hit(target);
+			return target.hit(b.entity);
 		});
 
-		if (hit != bullets.end() && !target_destroyed) {
+		if (hit != bullets.end() && target.isActive()) {
 			//std::cout << "HIT\n";
 			bullets.erase(hit);
-			target_destroyed = true;
+			target.deactivate();
 		}
 
 		for (auto& bullet : bullets) {
@@ -167,28 +167,6 @@ std::shared_ptr<Engine::HittableEntity> generate_user(float center_x, float cent
 	return std::make_shared<Engine::HittableEntity>(obj);
 }
 
-std::shared_ptr<Engine::HittableEntity> generate_target(float center_x, float center_y, float radius, int n_points) {
-	auto color = glm::vec4(1, 0, 0, 1.0);
-	auto vertices = Geometry::Shapes::circle({ glm::vec3(center_x, center_y, 0), color }, radius, n_points, color);
-
-	auto vbo_obj = Engine::VertexBuffer::createStatic(vertices);
-	auto vertex_vbo = std::make_shared<Engine::VertexBuffer>(std::move(vbo_obj));
-	auto vertex_array = std::make_shared<Engine::VertexArray>();
-
-	vertex_vbo->setLayout({
-		{ "Position", Engine::ShaderDataType::Float3 },
-		{ "Color", Engine::ShaderDataType::Float4 },
-	});
-	vertex_array->addVertexBuffer(vertex_vbo);
-	vertex_array->setDrawSpecs({
-		{ (uint32_t)vertices.size(), Engine::DrawMode::TriangleFan },
-	});
-
-	auto obj = Engine::HittableEntity::createEntity(vertex_array, glm::vec3(0, 0, 0), radius);
-	return std::make_shared<Engine::HittableEntity>(obj);
-}
-
-
 void drawScene() {
 	Engine::RendererUtils::clear(Engine::ClearOptions::ColorBuffer);
 	//Engine::RendererUtils::setPolygonModeDebug();
@@ -238,8 +216,8 @@ int main(int argc, char** argv)
 	Engine::RendererUtils::setClearColor(glm::vec4(1.0, 0.0, 1.0, 1.0));
 
 	shader_program = std::make_shared<Engine::ShaderProgram>(
-		"..\\Assignment1\\shaders\\vertexShader.glsl",
-		"..\\Assignment1\\shaders\\fragmentShader.glsl"
+		"..\\Assignment1\\res\\shaders\\vertexShader.glsl",
+		"..\\Assignment1\\res\\shaders\\fragmentShader.glsl"
 	);
 
 	Engine::EventsDispatcher::getInstance().registerCallback(Engine::EventType::MouseMoved, [&](const Engine::Event& evt) {
@@ -268,10 +246,7 @@ int main(int argc, char** argv)
 
 	scene.background = generate_background();
 
-	scene.target = generate_target(0, 0, 1, 50);
-	scene.target->setProjectionMatrix(glm::ortho(0.0f, (float)width, 0.0f, (float)height));
-	scene.target->getModelMatrixHandler()->scaleBy(glm::vec3(50, 50, 0));
-	scene.target->getModelMatrixHandler()->translateBy(glm::vec3(400, 400, 0));
+	scene.target = Sprites::Ghost(width, height);
 
 	scene.user.entity = generate_user(0, 0, 1, 100);
 	scene.user.entity->setProjectionMatrix(glm::ortho(0.0f, (float)width, 0.0f, (float)height));
