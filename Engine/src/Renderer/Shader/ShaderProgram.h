@@ -14,13 +14,15 @@ namespace Engine {
 	class ShaderProgram
 	{
 	public:
-		ShaderProgram(): id(0) {}
+		ShaderProgram(): id(0), is_binded(false) {}
 		ShaderProgram(std::string vertex_shader_path, std::string fragment_shader_path);
 
-		void bind() const;
-		void unbind() const;
+		void bind();
+		void unbind();
 
 		void uploadUniformMat4(std::string name, glm::mat4 mat) const;
+		void uploadUniformFloat(std::string name, float value) const;
+		void uploadUniformVec2(std::string name, glm::vec2 vec) const;
 		static const ShaderProgram* getActiveInstance();
 	private:
 		void createProgram(uint32_t vertex_shader_id, uint32_t fragment_shader_id);
@@ -29,6 +31,7 @@ namespace Engine {
 		static std::string getShaderTypeString(ShaderType type);
 
 		uint32_t id;
+		bool is_binded;
 		static const ShaderProgram* active_program;
 	};
 }

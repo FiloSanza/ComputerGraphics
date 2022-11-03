@@ -2,13 +2,12 @@
 
 #include <vector>
 #include <glm/glm.hpp>
-#include "Engine/engine.h"
+#include "../Renderer/Buffer/DataTypes.h"
 
 namespace Geometry {
 	class Hermite {
 	public:
 		static std::vector<Engine::Vertex> interpIntoVertices(
-			const std::vector<float>& t,
 			const std::vector<glm::vec3>& points,
 			Engine::Vertex center,
 			glm::vec4 color_vertex,

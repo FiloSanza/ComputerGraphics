@@ -15,3 +15,6 @@
 #include "src/Utils/Window.h"
 #include "src/Utils/Input.h"
 #include "src/Utils/Files.h"
+#include "src/Utils/GraphicContext.h"
+#include "src/Geometry/Hermite.h"
+#include "src/Geometry/Shapes.h"

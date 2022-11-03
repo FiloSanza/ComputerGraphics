@@ -25,6 +25,11 @@ namespace Engine {
 		return keyboard_state.isPressed(key);
 	}
 
+	WindowOptions Window::getOptions()
+	{
+		return options;
+	}
+
 	void Window::init()
 	{
 		glutInitWindowSize(options.width, options.height);

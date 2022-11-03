@@ -8,6 +8,7 @@
 
 namespace Engine {
 	ShaderProgram::ShaderProgram(std::string vertex_shader_path, std::string fragment_shader_path)
+		: is_binded(false)
 	{
 		auto vertex_shader_id = ShaderProgram::compileShader(vertex_shader_path, ShaderType::VERTEX);
 		auto fragment_shader_id = ShaderProgram::compileShader(fragment_shader_path, ShaderType::FRAGMENT);
@@ -24,21 +25,37 @@ namespace Engine {
 		createProgram(vertex_shader_id, fragment_shader_id);
 	}
 
-	void ShaderProgram::bind() const
+	void ShaderProgram::bind()
 	{
+		if (is_binded)
+			return;
 		glUseProgram(id);
 		active_program = this;
+		is_binded = true;
 	}
 
-	void ShaderProgram::unbind() const
+	void ShaderProgram::unbind()
 	{
 		glUseProgram(0);
+		is_binded = false;
 	}
 
 	void ShaderProgram::uploadUniformMat4(std::string name, glm::mat4 mat) const
 	{
 		auto location = glGetUniformLocation(id, name.c_str());
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(mat));
+	}
+
+	void ShaderProgram::uploadUniformFloat(std::string name, float value) const
+	{
+		auto location = glGetUniformLocation(id, name.c_str());
+		glUniform1f(location, value);
+	}
+
+	void ShaderProgram::uploadUniformVec2(std::string name, glm::vec2 vec) const
+	{
+		auto location = glGetUniformLocation(id, name.c_str());
+		glUniform2f(location, vec.x, vec.y);
 	}
 
 	const ShaderProgram* ShaderProgram::getActiveInstance()

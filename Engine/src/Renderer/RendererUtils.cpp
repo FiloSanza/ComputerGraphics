@@ -2,6 +2,8 @@
 #include "Shader/ShaderProgram.h"
 
 namespace Engine {
+	bool RendererUtils::DEBUG_MODE_ENABLED = false;
+
 	void RendererUtils::init(int& argc, char** argv)
 	{
 		glutInit(&argc, argv);
@@ -70,9 +72,46 @@ namespace Engine {
 		ShaderProgram::getActiveInstance()->uploadUniformMat4(name, mat);
 	}
 
+	void RendererUtils::uploadUniformFloat(std::string name, float value)
+	{
+		ShaderProgram::getActiveInstance()->uploadUniformFloat(name, value);
+	}
+
+	void RendererUtils::uploadUniformVec2(std::string name, glm::vec2 value)
+	{
+		ShaderProgram::getActiveInstance()->uploadUniformVec2(name, value);
+	}
+
+	float RendererUtils::getElapsedTime()
+	{
+		return glutGet(GLUT_ELAPSED_TIME);
+	}
+
+	void RendererUtils::enableDebugMode()
+	{
+		setPolygonModeDebug();
+		DEBUG_MODE_ENABLED = true;
+	}
+
+	void RendererUtils::disableDebugMode()
+	{
+		disablePolygonModeDebug();
+		DEBUG_MODE_ENABLED = false;
+	}
+
+	bool RendererUtils::isDebugModeEnabled()
+	{
+		return DEBUG_MODE_ENABLED;
+	}
+
 	void RendererUtils::setPolygonModeDebug()
 	{
 		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	}
+
+	void RendererUtils::disablePolygonModeDebug() 
+	{
+		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	}
 	
 	void RendererUtils::enableBlend()

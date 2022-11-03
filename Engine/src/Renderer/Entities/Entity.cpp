@@ -17,6 +17,17 @@ namespace Engine {
 		projection_matrix(projection_matrix)
 	{ }
 
+	Entity::Entity(
+		std::shared_ptr<VertexArray> vertex_array,
+		std::shared_ptr<ModelMatrixHandler> model_matrix,
+		glm::mat4 projection_matrix
+	) : vertex_array(vertex_array),
+		model_matrix_updated(true),
+		projection_matrix_updated(true),
+		model_matrix(model_matrix),
+		projection_matrix(projection_matrix)
+	{ }
+
 	void Entity::draw()
 	{
 		RendererUtils::uploadUniformMat4("Model", model_matrix->getModelMatrix());
@@ -48,6 +59,14 @@ namespace Engine {
 	Entity Entity::createEntity(
 		std::shared_ptr<VertexArray> vertex_array,
 		ModelMatrixHandler model_matrix,
+		glm::mat4 projection_matrix
+	) {
+		return Entity(vertex_array, model_matrix, projection_matrix);
+	}
+
+	Entity Entity::createEntity(
+		std::shared_ptr<VertexArray> vertex_array,
+		std::shared_ptr<ModelMatrixHandler> model_matrix,
 		glm::mat4 projection_matrix
 	) {
 		return Entity(vertex_array, model_matrix, projection_matrix);
@@ -93,6 +112,25 @@ namespace Engine {
 		return model;
 	}
 
+	const glm::vec4 BoundingBox::BOUNDING_BOX_COLOR = glm::vec4(1.0, 0.0, 1.0, 1.0);
+
+	BoundingBox::BoundingBox(glm::vec3 center, float radius, std::shared_ptr<ModelMatrixHandler> model_matrix)
+		: center(center), radius(radius), model_matrix(model_matrix) {
+
+		auto vertices = Geometry::Shapes::circumference(center, radius, 100, BOUNDING_BOX_COLOR);
+		auto vbo_obj = VertexBuffer::createStatic(vertices);
+		auto vbo = std::make_shared<VertexBuffer>(std::move(vbo_obj));
+		auto vao = std::make_shared<VertexArray>();
+
+		vbo->setLayout({
+			{ "Position", Engine::ShaderDataType::Float3 },
+			{ "Color", Engine::ShaderDataType::Float4 },
+		});
+		vao->addVertexBuffer(vbo);
+		vao->setDrawSpecs({ {(uint32_t)vertices.size(), Engine::DrawMode::LineLoop} });
+		bb_entity = Entity::createEntity(vao, model_matrix);
+	}
+
 	glm::vec3 BoundingBox::getCenter() const
 	{
 		const auto model = model_matrix->getModelMatrix();
@@ -107,6 +145,11 @@ namespace Engine {
 	float BoundingBox::getRadius() const
 	{
 		return radius * glm::length(model_matrix->getScale());
+	}
+
+	void BoundingBox::draw()
+	{
+		 bb_entity.draw();
 	}
 
 	bool BoundingBox::checkIntersection(const BoundingBox& other) const
@@ -137,6 +180,11 @@ namespace Engine {
 
 	const BoundingBox& HittableEntity::getBoundingBox() const {
 		return bounding_box;
+	}
+
+	void HittableEntity::drawWithBoundingBox() {
+		bounding_box.draw();
+		draw();
 	}
 
 	bool HittableEntity::hit(std::shared_ptr<Hittable> other) const {

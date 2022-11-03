@@ -146,24 +146,32 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="res\shaders\background.frag">
+      <FileType>CppCode</FileType>
+    </None>
+    <ClCompile Include="src\Game.cpp" />
+    <ClCompile Include="src\Sprites\Background.cpp" />
+    <ClCompile Include="src\Sprites\Bullet.cpp" />
     <ClCompile Include="src\Sprites\Ghost.cpp" />
+    <ClCompile Include="src\Sprites\Player.cpp" />
     <ClCompile Include="src\Sprites\SpriteLoader.cpp" />
-    <ClCompile Include="src\Geometry\Shapes.cpp" />
     <ClCompile Include="src\Assignment1.cpp" />
-    <ClCompile Include="src\Geometry\Hermite.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
-    <None Include="res\shaders\fragmentShader.glsl" />
-    <None Include="res\shaders\vertexShader.glsl" />
+    <None Include="res\shaders\background.vert" />
+    <None Include="res\shaders\sprites.frag" />
+    <None Include="res\shaders\sprites.vert" />
     <None Include="res\sprites\ghost.csv" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Game.h" />
+    <ClInclude Include="src\Sprites\Background.h" />
+    <ClInclude Include="src\Sprites\Bullet.h" />
     <ClInclude Include="src\Sprites\Ghost.h" />
+    <ClInclude Include="src\Sprites\Player.h" />
     <ClInclude Include="src\Sprites\Sprite.h" />
     <ClInclude Include="src\Sprites\SpriteLoader.h" />
-    <ClInclude Include="src\Geometry\Shapes.h" />
-    <ClInclude Include="src\Geometry\Hermite.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

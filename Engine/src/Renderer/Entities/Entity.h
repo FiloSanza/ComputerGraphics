@@ -3,11 +3,7 @@
 #include <memory>
 
 #include "../../lib.h"
-#include "../Buffer/VertexArray.h"
-#include "../Buffer/VertexBuffer.h"
-#include "../Buffer/IndexBuffer.h"
-#include "../Shader/ShaderProgram.h"
-#include "../Buffer/DataTypes.h"
+#include "../../../engine.h"
 
 namespace Engine {
 	class ModelMatrixHandler {
@@ -36,31 +32,9 @@ namespace Engine {
 		float rotation;
 	};
 
-	class BoundingBox {
-	public:
-		BoundingBox() : center(glm::vec3(0)), radius(0) {}
-		BoundingBox(glm::vec3 center, float radius, std::shared_ptr<ModelMatrixHandler> model_matrix)
-			: center(center), radius(radius), model_matrix(model_matrix) {}
-
-		glm::vec3 getCenter() const;
-		float getRadius() const;
-
-		bool checkIntersection(const BoundingBox& other) const;
-	private:
-		std::shared_ptr<ModelMatrixHandler> model_matrix;
-		glm::vec3 center;
-		float radius;
-	};
-
-	class Hittable {
-	public:
-		virtual bool hit(std::shared_ptr<Hittable> other) const = 0;
-		virtual const BoundingBox& getBoundingBox() const = 0;
-	};
-
 	class Entity {
 	public:
-		Entity() = delete;
+		Entity() {}
 
 		void draw();
 
@@ -75,11 +49,23 @@ namespace Engine {
 			glm::mat4 projection_matrix = glm::mat4()
 		);
 
+		static Entity createEntity(
+			std::shared_ptr<VertexArray> vertex_array,
+			std::shared_ptr<ModelMatrixHandler> model_matrix,
+			glm::mat4 projection_matrix = glm::mat4()
+		);
+
 	protected:
 		Entity(
 			std::shared_ptr<VertexArray> vertex_array,
 			ModelMatrixHandler model_matrix,
 			glm::mat4 projection_matrix
+		);
+
+		Entity(
+			std::shared_ptr<VertexArray> vertex_array,
+			std::shared_ptr<ModelMatrixHandler> model_matrix,
+			glm::mat4 projection_matrix = glm::mat4()
 		);
 
 		std::shared_ptr<VertexArray> vertex_array;
@@ -91,12 +77,39 @@ namespace Engine {
 
 	};
 
+	class BoundingBox {
+	public:
+		BoundingBox() : center(glm::vec3(0)), radius(0) {}
+		BoundingBox(glm::vec3 center, float radius, std::shared_ptr<ModelMatrixHandler> model_matrix);
+
+		void draw();
+
+		glm::vec3 getCenter() const;
+		float getRadius() const;
+		bool checkIntersection(const BoundingBox& other) const;
+	private:
+		static const glm::vec4 BOUNDING_BOX_COLOR;
+
+		std::shared_ptr<ModelMatrixHandler> model_matrix;
+		Entity bb_entity;
+		glm::vec3 center;
+		float radius;
+	};
+
+	class Hittable {
+	public:
+		virtual bool hit(std::shared_ptr<Hittable> other) const = 0;
+		virtual const BoundingBox& getBoundingBox() const = 0;
+	};
+
 	class HittableEntity : public Entity, public Hittable {
 	public:
 		HittableEntity() = delete;
 
 		bool hit(std::shared_ptr<Hittable> other) const override;
 		const BoundingBox& getBoundingBox() const override;
+
+		void drawWithBoundingBox();
 
 		static HittableEntity createEntity(
 			std::shared_ptr<VertexArray> vertex_array,

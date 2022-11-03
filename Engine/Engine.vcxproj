@@ -116,6 +116,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -143,6 +144,8 @@
     <ClInclude Include="src\Events\Event.h" />
     <ClInclude Include="src\Events\EventsDispatcher.h" />
     <ClInclude Include="src\Exceptions\ShaderLoadException.h" />
+    <ClInclude Include="src\Geometry\Hermite.h" />
+    <ClInclude Include="src\Geometry\Shapes.h" />
     <ClInclude Include="src\lib.h" />
     <ClInclude Include="src\Renderer\Buffer\BufferElement.h" />
     <ClInclude Include="src\Renderer\Buffer\BufferLayout.h" />
@@ -154,11 +157,14 @@
     <ClInclude Include="src\Renderer\RendererUtils.h" />
     <ClInclude Include="src\Renderer\Shader\ShaderProgram.h" />
     <ClInclude Include="src\Utils\Files.h" />
+    <ClInclude Include="src\Utils\GraphicContext.h" />
     <ClInclude Include="src\Utils\Input.h" />
     <ClInclude Include="src\Utils\Window.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Events\EventsDispatcher.cpp" />
+    <ClCompile Include="src\Geometry\Hermite.cpp" />
+    <ClCompile Include="src\Geometry\Shapes.cpp" />
     <ClCompile Include="src\Renderer\Buffer\IndexBuffer.cpp" />
     <ClCompile Include="src\Renderer\Buffer\VertexArray.cpp" />
     <ClCompile Include="src\Renderer\Buffer\VertexBuffer.cpp" />

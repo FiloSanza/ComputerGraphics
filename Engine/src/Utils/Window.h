@@ -36,6 +36,7 @@ namespace Engine {
 		~Window();
 
 		bool isKeyPressed(Keyboard::Key key);
+		WindowOptions getOptions();
 
 	private:
 		void init();
