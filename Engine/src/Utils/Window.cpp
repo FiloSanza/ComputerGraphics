@@ -32,13 +32,13 @@ namespace Engine {
 
 	void Window::init()
 	{
+		srand(time(nullptr));
 		glutInitWindowSize(options.width, options.height);
 		glutInitWindowPosition(100, 100);
 		id = glutCreateWindow(options.title.c_str());
 
 		int fail = glewInit();
 		
-		//TODO: handle
 		assert(!fail);
 
 		if (options.isEventEnabled(WindowEvent::KeyPress)) {
@@ -91,6 +91,34 @@ namespace Engine {
 			glutMotionFunc(mouse_movement_callback);
 			// Used for mouse movements while the mouse is NOT clicked
 			glutPassiveMotionFunc(mouse_movement_callback);
+		}
+
+		if (options.isEventEnabled(WindowEvent::WindowResize)) {
+			glutReshapeFunc([](int width, int height) {
+				auto evt = Event::createWindowResizeEvent(width, height);
+				EventsDispatcher::getInstance().dispatch(evt);
+			});
+
+			EventsDispatcher::getInstance().registerCallback(EventType::WindowResize, [this](const Event& evt) {
+				// We want to keep the right aspect ratio
+				float new_height = (float)evt.getHeight();
+				float new_width = (float)evt.getWidth();
+				float new_ratio = new_width / new_height;
+
+				if (new_ratio < options.aspect_ratio) {
+					new_width = options.aspect_ratio * new_height;
+					glutReshapeWindow(new_width, new_height);
+					glViewport(0, 0, new_width, new_height);
+				}
+				else if (new_ratio > options.aspect_ratio) {
+					new_height = new_width / options.aspect_ratio;
+					glutReshapeWindow(new_width, new_height);
+					glViewport(0, 0, new_width, new_height);
+				}
+
+				options.width = new_width;
+				options.height = new_height;
+			});
 		}
 	}
 }

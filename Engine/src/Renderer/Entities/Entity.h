@@ -70,8 +70,6 @@ namespace Engine {
 
 		std::shared_ptr<VertexArray> vertex_array;
 
-		bool model_matrix_updated;
-		bool projection_matrix_updated;
 		glm::mat4 projection_matrix;
 		std::shared_ptr<ModelMatrixHandler> model_matrix;
 

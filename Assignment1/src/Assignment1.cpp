@@ -6,8 +6,8 @@
 
 constexpr int SPAWN_ENEMY_DELAY = 2000;
 constexpr int STEP_DELAY = 25;
-constexpr int WIDTH = 1000;
-constexpr int HEIGHT = 500;
+constexpr int INITIAL_WIDTH = 1200;
+constexpr int INITIAL_HEIGHT = 600;
 
 Game game;
 std::shared_ptr<Engine::Window> window;
@@ -43,12 +43,12 @@ int main(int argc, char** argv)
 {
 	Engine::RendererUtils::init(argc, argv);
 	Engine::WindowOptions options;
-	options.width = WIDTH;
-	options.height = HEIGHT;
+	options.width = INITIAL_WIDTH;
+	options.height = INITIAL_HEIGHT;
+	options.world_width = INITIAL_WIDTH;
+	options.world_height = INITIAL_HEIGHT;
 	options.title = "Assignment 1";
-	options.enableEvent(Engine::WindowEvent::KeyPress);
-	options.enableEvent(Engine::WindowEvent::MouseMovement);
-	options.enableEvent(Engine::WindowEvent::MouseClick);
+	options.enableEvent(Engine::WindowEvent::AllEnabled);
 	window = std::make_shared<Engine::Window>(options);
 	Engine::RendererUtils::setDisplayFunc(drawScene);
 	Engine::RendererUtils::setClearColor(glm::vec4(1.0, 1.0, 1.0, 1.0));
@@ -56,7 +56,11 @@ int main(int argc, char** argv)
 	game = Game(window);
 
 	Engine::EventsDispatcher::getInstance().registerCallback(Engine::EventType::MouseMoved, [&](const Engine::Event& evt) {
-		game.rotatePlayer(evt.getMouseX(), HEIGHT - evt.getMouseY());
+		auto x = evt.getMouseX();
+		auto y = window->getOptions().height - evt.getMouseY();
+		auto world_coord = window->convertWindowToWorldCoordinates({ x, y, 0.0 });
+		
+		game.rotatePlayer(world_coord.x, world_coord.y);
 	});
 
 	Engine::EventsDispatcher::getInstance().registerCallback(Engine::EventType::MouseClick, [&](const Engine::Event& evt) {
@@ -65,8 +69,10 @@ int main(int argc, char** argv)
 		}
 
 		auto click_x = evt.getMouseX();
-		auto click_y = HEIGHT - evt.getMouseY();
-		game.shootBullet(click_x, click_y);
+		auto click_y = window->getOptions().height - evt.getMouseY();
+		auto world_coord = window->convertWindowToWorldCoordinates({ click_x, click_y, 0.0 });
+
+		game.shootBullet(world_coord.x, world_coord.y);
 	});
 	
 	Engine::RendererUtils::addTimerCallback(spawn_enemy, SPAWN_ENEMY_DELAY, 0);

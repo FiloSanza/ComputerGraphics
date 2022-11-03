@@ -23,6 +23,7 @@ namespace Sprites {
 		void moveBy(glm::vec3 delta);
 		void rotateBy(float angle);
 		void updateEntity();
+		void updateProjectionMatrix(glm::mat4 matrix);
 	private:
 		const static glm::vec3 OBJECT_CENTER;
 		const static float OBJECT_RADIUS;

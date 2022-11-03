@@ -40,4 +40,9 @@ namespace Sprites {
 	{
 		return context;
 	}
+	
+	void Background::updateProjectionMatrix(glm::mat4 matrix)
+	{
+		entity->setProjectionMatrix(matrix);
+	}
 }

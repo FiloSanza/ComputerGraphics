@@ -1,6 +1,8 @@
 #pragma once
 
 #include <numbers>
+#include <iostream>
+
 #include "Game.h"
 
 const float Game::PLAYER_MOVE_DELTA = 10;
@@ -20,7 +22,7 @@ Game::Game(std::shared_ptr<Engine::Window> window)
 	background_ctx = std::make_shared<Engine::GraphicContext>(window, background_shader);
 
 	background = Sprites::Background(background_ctx);
-	player = Sprites::Player(glm::vec3(window_options.width / 2, window_options.height / 2, 0), sprite_ctx);
+	player = Sprites::Player(glm::vec3(window_options.world_width / 2, window_options.world_height / 2, 0), sprite_ctx);
 }
 
 void Game::draw() const
@@ -55,9 +57,14 @@ void Game::shootBullet(float click_x, float click_y)
 	if (!player.isActive())
 		return;
 
-	auto delta = glm::normalize(glm::vec3(click_x - player.getX(), click_y - player.getY(), 0));
+	auto screen_click = window->convertWorldToWindowCoordinates({ click_x, click_y, 0 });
+	auto screen_player = window->convertWorldToWindowCoordinates({ player.getX(), player.getY(), 0 });
+
+	auto screen_delta = glm::normalize(screen_click - screen_player);
+	auto world_delta = glm::normalize(glm::vec3(click_x, click_y, 0) - player.getPos());
+
 	auto pos = glm::vec3(player.getX(), player.getY(), 0);
-	auto bullet = Sprites::Bullet(pos, delta, sprite_ctx);
+	auto bullet = Sprites::Bullet(pos, world_delta, sprite_ctx);
 	bullets.push_back(bullet);
 }
 
@@ -77,11 +84,11 @@ void Game::movePlayer()
 		delta.y -= PLAYER_MOVE_DELTA;
 	}
 
-	if (window->isKeyPressed(Engine::Keyboard::Key::D) && player.getX() + PLAYER_MOVE_DELTA < options.width) {
+	if (window->isKeyPressed(Engine::Keyboard::Key::D) && player.getX() + PLAYER_MOVE_DELTA < options.world_width) {
 		delta.x += PLAYER_MOVE_DELTA;
 	}
 
-	if (window->isKeyPressed(Engine::Keyboard::Key::W) && player.getY() + PLAYER_MOVE_DELTA < options.height) {
+	if (window->isKeyPressed(Engine::Keyboard::Key::W) && player.getY() + PLAYER_MOVE_DELTA < options.world_height) {
 		delta.y += PLAYER_MOVE_DELTA;
 	}
 	player.moveBy(delta);
@@ -94,6 +101,9 @@ void Game::rotatePlayer(float mouse_x, float mouse_y)
 		return;
 
 	auto angle = atan2(mouse_y - player.getY(), mouse_x - player.getX()) * 180.0 / std::numbers::pi;
+
+	//std::cout << angle << " - [" << mouse_x << ", " << mouse_y << "]\n";
+
 	player.rotateBy(angle);
 	player.updateEntity();
 }
@@ -108,7 +118,7 @@ void Game::updateBullets()
 	for (auto& bullet : bullets) {
 		bullet.updateEntity();
 
-		if (bullet.getX() < 0 || bullet.getX() > options.width || bullet.getY() < 0 || bullet.getY() > options.height) {
+		if (bullet.getX() < 0 || bullet.getX() > options.world_width || bullet.getY() < 0 || bullet.getY() > options.world_height) {
 			bullet.deactivate();
 		}
 	}
@@ -129,10 +139,10 @@ void Game::updateGhosts()
 			ghost.decreaseLifePoints();
 		}
 
-		if (ghost.hit(player)) {
+		/*if (ghost.hit(player)) {
 			player.deactivate();
 			break;
-		}
+		}*/
 
 		auto dir = player.getPos() - ghost.getPos();
 		ghost.setDirection(dir);
@@ -153,10 +163,16 @@ void Game::spawnGhost()
 		return;
 
 	auto options = window->getOptions();
+	int x, y;
 
-	int x = rand() % options.width;
-	int y = rand() % options.height;
-	auto ghost = Sprites::Ghost(glm::vec3(x, y, 0), rand() % Sprites::Ghost::MAX_LEVEL + 1, sprite_ctx);
+	Sprites::Ghost ghost;
+
+	do {
+		x = rand() % options.world_width;
+		y = rand() % options.world_height;
+		ghost = Sprites::Ghost(glm::vec3(x, y, 0), rand() % Sprites::Ghost::MAX_LEVEL + 1, sprite_ctx);
+	} while (player.hit(ghost));
+
 	ghosts.push_back(ghost);
 }
 

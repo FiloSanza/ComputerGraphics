@@ -36,7 +36,7 @@ namespace Sprites {
 
 		auto obj = Engine::HittableEntity::createEntity(vertex_array, OBJECT_CENTER, OBJECT_RADIUS);
 		entity = std::make_shared<Engine::HittableEntity>(obj);
-		entity->setProjectionMatrix(glm::ortho(0.0f, (float)window_options.width, 0.0f, (float)window_options.height));
+		entity->setProjectionMatrix(glm::ortho(0.0f, (float)window_options.world_width, 0.0f, (float)window_options.world_height));
 		entity->getModelMatrixHandler()->translateBy(pos);
 	}
 
@@ -58,10 +58,7 @@ namespace Sprites {
 	void Ghost::draw() const
 	{
 		context->getShaderProgram()->bind();
-		if (Engine::RendererUtils::isDebugModeEnabled())
-			entity->draw();
-		else
-			entity->draw();
+		entity->draw();
 	}
 	
 	glm::vec3 Ghost::getPos() const
@@ -119,6 +116,11 @@ namespace Sprites {
 	void Ghost::setDirection(glm::vec3 direction)
 	{
 		this->direction = glm::normalize(direction);
+	}
+
+	void Ghost::updateProjectionMatrix(glm::mat4 matrix)
+	{
+		entity->setProjectionMatrix(matrix);
 	}
 	
 	void Ghost::decreaseLifePoints()

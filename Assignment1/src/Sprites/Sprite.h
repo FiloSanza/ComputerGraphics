@@ -20,6 +20,7 @@ namespace Sprites {
 		virtual void updateY(float delta_y) = 0;
 		virtual void moveBy(glm::vec3 delta) = 0;
 		virtual void updateEntity() = 0;
+		virtual void updateProjectionMatrix(glm::mat4 matrix) = 0;
 	protected:
 		const static glm::vec3 OBJECT_CENTER;
 		const static float OBJECT_RADIUS;

@@ -48,9 +48,10 @@ namespace Engine {
 			const auto gl_draw_mode = drawModeToGLMode(spec.draw_mode);
 			if (vertex_array->isIndexed()) {
 				vertex_array->getIndexBuffer()->bind();
-				glDrawElements(gl_draw_mode, spec.vertices, GL_UNSIGNED_INT, (const void*) offset);
+				glDrawElements(gl_draw_mode, spec.vertices, GL_UNSIGNED_INT, (const void*)offset);
 				offset += spec.vertices;
-			} else {
+			}
+			else {
 				glDrawArrays(gl_draw_mode, offset, offset + spec.vertices);
 				offset += spec.vertices;
 			}

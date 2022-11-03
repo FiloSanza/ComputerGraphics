@@ -30,6 +30,7 @@ namespace Sprites {
 		void updateEntity();
 		void decreaseLifePoints();
 		void setDirection(glm::vec3 direction);
+		void updateProjectionMatrix(glm::mat4 matrix);
 	private:
 		static const std::string VERTEX_FILE;
 		const static glm::vec3 OBJECT_CENTER;

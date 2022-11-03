@@ -1,5 +1,7 @@
 #include "Player.h"
 
+#include <iostream>
+
 namespace Sprites {
 	const glm::vec3 Player::OBJECT_CENTER = glm::vec3(0, 0, 0);
 	const float Player::OBJECT_RADIUS = 1;
@@ -38,7 +40,7 @@ namespace Sprites {
 
 		entity->getModelMatrixHandler()->translateBy(pos);
 		entity->getModelMatrixHandler()->scaleBy(glm::vec3(30, 30, 0));
-		entity->setProjectionMatrix(glm::ortho(0.0f, (float)window_options.width, 0.0f, (float)window_options.height));
+		entity->setProjectionMatrix(glm::ortho(0.0f, (float)window_options.world_width, 0.0f, (float)window_options.world_height));
 	}
 
 	bool Player::isActive() const
@@ -59,10 +61,7 @@ namespace Sprites {
 	void Player::draw() const
 	{
 		context->getShaderProgram()->bind();
-		if (Engine::RendererUtils::isDebugModeEnabled())
-			entity->draw();
-		else
-			entity->draw();
+		entity->draw();
 	}
 	
 	glm::vec3 Player::getPos() const
@@ -119,5 +118,10 @@ namespace Sprites {
 	{
 		entity->getModelMatrixHandler()->translateBy(pos);
 		entity->getModelMatrixHandler()->rotate(angle);
+	}
+	
+	void Player::updateProjectionMatrix(glm::mat4 matrix)
+	{
+		entity->setProjectionMatrix(matrix);
 	}
 }

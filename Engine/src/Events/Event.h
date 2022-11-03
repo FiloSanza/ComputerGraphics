@@ -8,7 +8,8 @@ namespace Engine {
 		KeyPressed = 0,
 		KeyReleased,
 		MouseClick,
-		MouseMoved
+		MouseMoved,
+		WindowResize
 	};
 
 	class Event {
@@ -17,6 +18,8 @@ namespace Engine {
 		Keyboard::Key getKey() const { return key; }
 		int getMouseX() const { return mouse_x; }
 		int getMouseY() const { return mouse_y; }
+		int getWidth() const { return width; }
+		int getHeight() const { return height; }
 		Mouse::Button getMouseButton() const { return mouse_button; }
 		Mouse::ButtonState getMouseButtonState() const { return mouse_button_state; }
 
@@ -24,6 +27,8 @@ namespace Engine {
 		void setKey(Keyboard::Key key) { this->key = key; }
 		void setMouseX(int x) { mouse_x = x; }
 		void setMouseY(int y) { mouse_y = y; }
+		void setWidth(int width) { this->width = width; }
+		void setHeight(int height) { this->height = height; }
 		void setMouseButton(Mouse::Button button) { mouse_button = button; }
 		void setMouseButtonState(Mouse::ButtonState state) { mouse_button_state = state; }
 
@@ -62,6 +67,15 @@ namespace Engine {
 			evt.setMouseY(y);
 			return evt;
 		}
+
+		static Event createWindowResizeEvent(int width, int height) {
+			auto evt = Event();
+			evt.setType(EventType::WindowResize);
+			evt.setWidth(width);
+			evt.setHeight(height);
+			return evt;
+		}
+
 	private:
 		Event() {}
 
@@ -69,6 +83,8 @@ namespace Engine {
 		Keyboard::Key key;
 		int mouse_x;
 		int mouse_y;
+		int width;
+		int height;
 		Mouse::Button mouse_button;
 		Mouse::ButtonState mouse_button_state;
 	};

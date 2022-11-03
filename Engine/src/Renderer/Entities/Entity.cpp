@@ -11,8 +11,6 @@ namespace Engine {
 		ModelMatrixHandler model_matrix,
 		glm::mat4 projection_matrix
 	) : vertex_array(vertex_array),
-		model_matrix_updated(true),
-		projection_matrix_updated(true),
 		model_matrix(std::make_shared<ModelMatrixHandler>(std::move(model_matrix))), 
 		projection_matrix(projection_matrix)
 	{ }
@@ -22,8 +20,6 @@ namespace Engine {
 		std::shared_ptr<ModelMatrixHandler> model_matrix,
 		glm::mat4 projection_matrix
 	) : vertex_array(vertex_array),
-		model_matrix_updated(true),
-		projection_matrix_updated(true),
 		model_matrix(model_matrix),
 		projection_matrix(projection_matrix)
 	{ }
@@ -31,18 +27,12 @@ namespace Engine {
 	void Entity::draw()
 	{
 		RendererUtils::uploadUniformMat4("Model", model_matrix->getModelMatrix());
-
-		if (projection_matrix_updated) {
-			RendererUtils::uploadUniformMat4("Projection", projection_matrix);
-			projection_matrix_updated = false;
-		}
-
+		RendererUtils::uploadUniformMat4("Projection", projection_matrix);
 		RendererUtils::draw(vertex_array);
 	}
 
 	void Entity::setProjectionMatrix(glm::mat4 matrix)
 	{
-		projection_matrix_updated = true;
 		projection_matrix = matrix;
 	}
 
