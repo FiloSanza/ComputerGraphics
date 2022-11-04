@@ -17,7 +17,7 @@ namespace Sprites {
 	{
 		const auto window_options = context->getWindow()->getOptions();
 		const auto color = glm::vec4(0.8, 0.8, 0.8, 1);
-		const auto color_center = glm::vec4(0.5, 0.5, 0.5, 1);
+		const auto color_center = glm::vec4(0.25, 0.25, 0.25, 1);
 		auto points = SpriteLoader::load_sprite_coords(VERTEX_FILE);
 		auto vertices = Geometry::Hermite::interpIntoVertices(points, { OBJECT_CENTER, color_center }, color, 140);
 

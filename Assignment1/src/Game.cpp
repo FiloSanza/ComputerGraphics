@@ -173,6 +173,10 @@ void Game::updateEnemies()
 		enemy.setDirection(dir);
 		enemy.updateEntity();
 	}
+
+	for (auto& enemy : spores) {
+		enemy.updateEntity();
+	}
 }
 
 void Game::deleteInactiveSprites()

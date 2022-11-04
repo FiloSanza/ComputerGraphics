@@ -114,7 +114,8 @@ namespace Sprites {
 
 	void Spore::updateEntity()
 	{
-		entity->getModelMatrixHandler()->translateBy(pos);
+		float angle = ((int)Engine::RendererUtils::getElapsedTime() / 100) % 360;
+		entity->getModelMatrixHandler()->rotate(angle);
 	}
 
 	void Spore::updateProjectionMatrix(glm::mat4 matrix)
