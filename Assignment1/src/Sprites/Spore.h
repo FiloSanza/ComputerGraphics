@@ -1,12 +1,16 @@
 #pragma once
 
 #include "Sprite.h"
+#include "Engine/engine.h"
 
 namespace Sprites {
-	class Player : public HittableSprite {
+	class Spore : public HittableSprite {
 	public:
-		Player() : is_active(false) {}
-		Player(glm::vec3 pos, std::shared_ptr<Engine::GraphicContext> context);
+		const static int MAX_LEVEL;
+
+		Spore() : is_active(false) {}
+		Spore(glm::vec3 pos, int life_points, std::shared_ptr<Engine::GraphicContext> context);
+
 		bool isActive() const;
 		float getX() const;
 		float getY() const;
@@ -15,25 +19,27 @@ namespace Sprites {
 		bool hit(const HittableSprite& other) const;
 		std::shared_ptr<Engine::HittableEntity> getEntity() const;
 		std::shared_ptr<Engine::GraphicContext> getGraphicsContext() const;
+		bool shouldShot() const;
 
 		void activate();
 		void deactivate();
-		void updateX(float delta_x);
-		void updateY(float delta_y);
+		void updateX(float x);
+		void updateY(float y);
 		void moveBy(glm::vec3 delta);
-		void rotateBy(float angle);
 		void updateEntity();
-		void updateProjectionMatrix(glm::mat4 matrix);
 		void decreaseLifePoints();
+		void updateShootTimeStamp();
+		void updateProjectionMatrix(glm::mat4 matrix);
 	private:
-		const static std::string VERTEX_FILE;
+		static const std::string VERTEX_FILE;
 		const static glm::vec3 OBJECT_CENTER;
 		const static float OBJECT_RADIUS;
+		const static float SHOOT_DELAY;
+		const static float SPEED;
 
+		float last_shot_timestamp;
 		int life_points;
 		glm::vec3 pos;
-		glm::vec3 screen_pos;
-		float angle;
 		bool is_active;
 		std::shared_ptr<Engine::HittableEntity> entity;
 		std::shared_ptr<Engine::GraphicContext> context;

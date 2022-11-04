@@ -4,7 +4,7 @@
 #include <numbers>
 #include "Game.h"
 
-constexpr int SPAWN_ENEMY_DELAY = 2000;
+constexpr int SPAWN_ENEMY_DELAY = 3000;
 constexpr int STEP_DELAY = 25;
 constexpr int INITIAL_WIDTH = 1200;
 constexpr int INITIAL_HEIGHT = 600;
@@ -27,9 +27,14 @@ void drawScene() {
 	Engine::RendererUtils::swapBuffers();
 }
 
-void spawn_enemy(int value) {
+void spawn_ghost(int value) {
 	game.spawnGhost();
-	Engine::RendererUtils::addTimerCallback(spawn_enemy, SPAWN_ENEMY_DELAY, 0);
+	Engine::RendererUtils::addTimerCallback(spawn_ghost, SPAWN_ENEMY_DELAY, 0);
+}
+
+void spawn_spore(int value) {
+	game.spawnSpore();
+	Engine::RendererUtils::addTimerCallback(spawn_spore, SPAWN_ENEMY_DELAY, 0);
 }
 
 void step(int value) {
@@ -75,7 +80,8 @@ int main(int argc, char** argv)
 		game.shootBullet(world_coord.x, world_coord.y);
 	});
 	
-	Engine::RendererUtils::addTimerCallback(spawn_enemy, SPAWN_ENEMY_DELAY, 0);
+	Engine::RendererUtils::addTimerCallback(spawn_ghost, SPAWN_ENEMY_DELAY, 0);
+	Engine::RendererUtils::addTimerCallback(spawn_spore, SPAWN_ENEMY_DELAY + SPAWN_ENEMY_DELAY / 2, 0);
 	Engine::RendererUtils::addTimerCallback(step, STEP_DELAY, 0);
 	Engine::RendererUtils::startMainLoop();
 }

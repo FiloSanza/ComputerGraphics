@@ -28,6 +28,8 @@ namespace Sprites {
 
 	class HittableSprite : public Sprite {
 	public:
+		virtual void decreaseLifePoints() = 0;
+
 		virtual bool hit(const HittableSprite& other) const = 0;
 		virtual std::shared_ptr<Engine::HittableEntity> getEntity() const = 0;
 	};

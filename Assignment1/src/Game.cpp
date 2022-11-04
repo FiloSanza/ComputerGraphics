@@ -1,9 +1,12 @@
 #pragma once
 
 #include <numbers>
+#include <algorithm>
 #include <iostream>
 
 #include "Game.h"
+#include "Sprites/Ghost.h"
+#include "Sprites/Spore.h"
 
 const float Game::PLAYER_MOVE_DELTA = 10;
 const char* Game::SPRITE_VERTEX_SHADER = "..\\Assignment1\\res\\shaders\\sprites.vert";
@@ -33,7 +36,7 @@ void Game::draw() const
 
 	sprite_ctx->getShaderProgram()->bind();
 
-	for (const auto& bullet : bullets) {
+	for (const auto& bullet : player_bullets) {
 		if (bullet.isActive()) {
 			bullet.draw();
 		}
@@ -43,9 +46,21 @@ void Game::draw() const
 		player.draw();
 	}
 
-	for (const auto& ghost : ghosts) {
-		if (ghost.isActive()) {
-			ghost.draw();
+	for (const auto& bullet : enemy_bullets) {
+		if (bullet.isActive()) {
+			bullet.draw();
+		}
+	}
+
+	for (const auto& enemy : spores) {
+		if (enemy.isActive()) {
+			enemy.draw();
+		}
+	}
+
+	for (const auto& enemy : ghosts) {
+		if (enemy.isActive()) {
+			enemy.draw();
 		}
 	}
 
@@ -57,15 +72,10 @@ void Game::shootBullet(float click_x, float click_y)
 	if (!player.isActive())
 		return;
 
-	auto screen_click = window->convertWorldToWindowCoordinates({ click_x, click_y, 0 });
-	auto screen_player = window->convertWorldToWindowCoordinates({ player.getX(), player.getY(), 0 });
-
-	auto screen_delta = glm::normalize(screen_click - screen_player);
 	auto world_delta = glm::normalize(glm::vec3(click_x, click_y, 0) - player.getPos());
-
 	auto pos = glm::vec3(player.getX(), player.getY(), 0);
-	auto bullet = Sprites::Bullet(pos, world_delta, sprite_ctx);
-	bullets.push_back(bullet);
+	auto bullet = Sprites::Bullet(pos, world_delta, sprite_ctx, true);
+	player_bullets.push_back(bullet);
 }
 
 void Game::movePlayer()
@@ -102,8 +112,6 @@ void Game::rotatePlayer(float mouse_x, float mouse_y)
 
 	auto angle = atan2(mouse_y - player.getY(), mouse_x - player.getX()) * 180.0 / std::numbers::pi;
 
-	//std::cout << angle << " - [" << mouse_x << ", " << mouse_y << "]\n";
-
 	player.rotateBy(angle);
 	player.updateEntity();
 }
@@ -115,7 +123,15 @@ void Game::updateBullets()
 
 	auto options = window->getOptions();
 
-	for (auto& bullet : bullets) {
+	for (auto& bullet : player_bullets) {
+		bullet.updateEntity();
+
+		if (bullet.getX() < 0 || bullet.getX() > options.world_width || bullet.getY() < 0 || bullet.getY() > options.world_height) {
+			bullet.deactivate();
+		}
+	}
+
+	for (auto& bullet : enemy_bullets) {
 		bullet.updateEntity();
 
 		if (bullet.getX() < 0 || bullet.getX() > options.world_width || bullet.getY() < 0 || bullet.getY() > options.world_height) {
@@ -124,37 +140,64 @@ void Game::updateBullets()
 	}
 }
 
-void Game::updateGhosts()
+void Game::updateEnemies()
 {
 	if (!player.isActive())
 		return;
 
-	for (auto& ghost : ghosts) {
-		auto hit = std::find_if(bullets.begin(), bullets.end(), [&](const Sprites::Bullet& b) {
-			return ghost.hit(b);
+	auto update_enemy = [&](Sprites::HittableSprite& enemy) {
+		if (!player.isActive()) {
+			return;
+		}
+		
+		auto hit = std::find_if(player_bullets.begin(), player_bullets.end(), [&](const Sprites::Bullet& b) {
+			return b.isActive() && enemy.hit(b);
 		});
 
-		if (hit != bullets.end()) {
+		if (hit != player_bullets.end()) {
 			hit->deactivate();
-			ghost.decreaseLifePoints();
+			enemy.decreaseLifePoints();
 		}
 
-		/*if (ghost.hit(player)) {
+		if (enemy.isActive() && enemy.hit(player)) {
 			player.deactivate();
-			break;
-		}*/
+		}
+	};
 
-		auto dir = player.getPos() - ghost.getPos();
-		ghost.setDirection(dir);
-		ghost.updateEntity();
+	std::for_each(ghosts.begin(), ghosts.end(), update_enemy);
+	std::for_each(spores.begin(), spores.end(), update_enemy);
+	std::for_each(enemy_bullets.begin(), enemy_bullets.end(), update_enemy);
+
+	for (auto& enemy : ghosts) {
+		auto dir = player.getPos() - enemy.getPos();
+		enemy.setDirection(dir);
+		enemy.updateEntity();
 	}
 }
 
 void Game::deleteInactiveSprites()
 {
 	const auto is_inactive_checker = [](const Sprites::Sprite& s) { return !s.isActive(); };
-	std::erase_if(bullets, is_inactive_checker);
+	std::erase_if(player_bullets, is_inactive_checker);
+	std::erase_if(enemy_bullets, is_inactive_checker);
+	std::erase_if(spores, is_inactive_checker);
 	std::erase_if(ghosts, is_inactive_checker);
+}
+
+void Game::updateSpores()
+{
+	for (auto& spore : spores) {
+		if (!spore.shouldShot()) {
+			continue;
+		}
+
+		auto delta = glm::normalize(player.getPos() - spore.getPos());
+		auto pos = glm::vec3(spore.getX(), spore.getY(), 0);
+		auto bullet = Sprites::Bullet(pos, delta, sprite_ctx, false);
+		spore.updateShootTimeStamp();
+
+		enemy_bullets.push_back(bullet);
+	}
 }
 
 void Game::spawnGhost()
@@ -165,20 +208,42 @@ void Game::spawnGhost()
 	auto options = window->getOptions();
 	int x, y;
 
-	Sprites::Ghost ghost;
-
-	do {
+	while (true) {
 		x = rand() % options.world_width;
 		y = rand() % options.world_height;
-		ghost = Sprites::Ghost(glm::vec3(x, y, 0), rand() % Sprites::Ghost::MAX_LEVEL + 1, sprite_ctx);
-	} while (player.hit(ghost));
+		const auto enemy = Sprites::Ghost(glm::vec3(x, y, 0), rand() % Sprites::Ghost::MAX_LEVEL + 1, sprite_ctx);
 
-	ghosts.push_back(ghost);
+		if (!player.hit(enemy)) {
+			ghosts.push_back(enemy);
+			break;
+		}
+	}
+}
+
+void Game::spawnSpore()
+{
+	if (!player.isActive())
+		return;
+
+	auto options = window->getOptions();
+	int x, y;
+
+	while (true) {
+		x = rand() % options.world_width;
+		y = rand() % options.world_height;
+		const auto enemy = Sprites::Spore(glm::vec3(x, y, 0), 1, sprite_ctx);
+
+		if (!player.hit(enemy)) {
+			spores.push_back(enemy);
+			break;
+		}
+	}
 }
 
 void Game::step()
 {
+	updateSpores();
 	updateBullets();
-	updateGhosts();
+	updateEnemies();
 	deleteInactiveSprites();
 }

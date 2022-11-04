@@ -1,23 +1,18 @@
 #include "Player.h"
-
-#include <iostream>
+#include "SpriteLoader.h"
 
 namespace Sprites {
+	const std::string Player::VERTEX_FILE = "..\\Assignment1\\res\\sprites\\player.csv";
 	const glm::vec3 Player::OBJECT_CENTER = glm::vec3(0, 0, 0);
-	const float Player::OBJECT_RADIUS = 1;
+	const float Player::OBJECT_RADIUS = 2;
 
 	Player::Player(glm::vec3 pos, std::shared_ptr<Engine::GraphicContext> context)
-		: pos(pos), is_active(true), angle(0), context(context)
+		: pos(pos), is_active(true), angle(0), context(context), life_points(1)
 	{
 		auto window_options = context->getWindow()->getOptions();
 		auto color = glm::vec4(0, 0, 1, 1.0);
-		auto vertices = Geometry::Shapes::circle({ glm::vec3(0, 0, 0), color }, 1, 200, color);
-
-		int circle_size = vertices.size();
-
-		vertices.push_back({ glm::vec3(1.4,  0.5, 0.0), color });
-		vertices.push_back({ glm::vec3(1.4, -0.5, 0.0), color });
-		vertices.push_back({ glm::vec3(0,   0, 0.0), color });
+		auto points = SpriteLoader::load_sprite_coords(VERTEX_FILE);
+		auto vertices = Geometry::Hermite::interpIntoVertices(points, { OBJECT_CENTER, color }, color, 140);
 
 		auto vbo_obj = Engine::VertexBuffer::createStatic(vertices);
 		auto vertex_vbo = std::make_shared<Engine::VertexBuffer>(std::move(vbo_obj));
@@ -30,8 +25,7 @@ namespace Sprites {
 
 		vertex_array->addVertexBuffer(vertex_vbo);
 		vertex_array->setDrawSpecs({
-			{ (uint32_t)circle_size, Engine::DrawMode::TriangleFan },
-			{ (uint32_t)vertices.size() - circle_size, Engine::DrawMode::Triangles }
+			{ (uint32_t)vertices.size(), Engine::DrawMode::TriangleFan },
 		});
 
 		entity = std::make_shared<Engine::HittableEntity>(
@@ -39,13 +33,13 @@ namespace Sprites {
 		);
 
 		entity->getModelMatrixHandler()->translateBy(pos);
-		entity->getModelMatrixHandler()->scaleBy(glm::vec3(30, 30, 0));
+		entity->getModelMatrixHandler()->scaleBy(glm::vec3(15, 15, 0));
 		entity->setProjectionMatrix(glm::ortho(0.0f, (float)window_options.world_width, 0.0f, (float)window_options.world_height));
 	}
 
 	bool Player::isActive() const
 	{
-		return is_active;
+		return is_active && life_points > 0;
 	}
 
 	float Player::getX() const
@@ -123,5 +117,10 @@ namespace Sprites {
 	void Player::updateProjectionMatrix(glm::mat4 matrix)
 	{
 		entity->setProjectionMatrix(matrix);
+	}
+	
+	void Player::decreaseLifePoints()
+	{
+		life_points--;
 	}
 }

@@ -5,13 +5,16 @@
 namespace Sprites {
 	const glm::vec3 Bullet::OBJECT_CENTER = glm::vec3(0, 0, 0);
 	const float Bullet::OBJECT_RADIUS = 1;
-	const float Bullet::SPEED = 10;
+	const glm::vec4 Bullet::ENEMY_BULLET_COLOR = glm::vec4(1.0, 0.72, 0.09, 1.0);
+	const glm::vec4 Bullet::PLAYER_BULLET_COLOR = glm::vec4(0, 0, 1.0, 1.0);
+	const float Bullet::ENEMY_BULLET_SPEED = 5;
+	const float Bullet::PLAYER_BULLET_SPEED = 10;
 
-	Bullet::Bullet(glm::vec3 pos, glm::vec3 direction, std::shared_ptr<Engine::GraphicContext> context)
-		: pos(pos + OBJECT_CENTER), is_active(true), direction(direction), context(context)
+	Bullet::Bullet(glm::vec3 pos, glm::vec3 direction, std::shared_ptr<Engine::GraphicContext> context, bool is_player_bullet)
+		: pos(pos + OBJECT_CENTER), is_active(true), direction(direction), context(context), life_points(1), is_player_bullet(is_player_bullet)
 	{
 		auto window_options = context->getWindow()->getOptions();
-		auto color = glm::vec4(0, 0, 1, 1.0);
+		auto color = is_player_bullet ? PLAYER_BULLET_COLOR : ENEMY_BULLET_COLOR;
 		auto vertices = Geometry::Shapes::circle({ glm::vec3(0, 0, 0), color }, 1, 6, color);
 
 		auto vbo_obj = Engine::VertexBuffer::createStatic(vertices);
@@ -35,7 +38,7 @@ namespace Sprites {
 
 	bool Bullet::isActive() const
 	{
-		return is_active;
+		return is_active && life_points > 0;
 	}
 	
 	float Bullet::getX() const
@@ -101,7 +104,7 @@ namespace Sprites {
 
 	void Bullet::updateEntity() 
 	{
-		moveBy(direction * SPEED);
+		moveBy(direction * (is_player_bullet ? PLAYER_BULLET_SPEED : ENEMY_BULLET_SPEED));
 		entity->getModelMatrixHandler()->translateBy(pos);
 	}
 	
@@ -113,5 +116,10 @@ namespace Sprites {
 	void Bullet::updateProjectionMatrix(glm::mat4 matrix)
 	{
 		entity->setProjectionMatrix(matrix);
+	}
+	
+	void Bullet::decreaseLifePoints()
+	{
+		life_points--;
 	}
 }

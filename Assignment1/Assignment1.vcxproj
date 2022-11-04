@@ -154,8 +154,11 @@
     <ClCompile Include="src\Sprites\Bullet.cpp" />
     <ClCompile Include="src\Sprites\Ghost.cpp" />
     <ClCompile Include="src\Sprites\Player.cpp" />
+    <ClCompile Include="src\Sprites\Spore.cpp" />
     <ClCompile Include="src\Sprites\SpriteLoader.cpp" />
     <ClCompile Include="src\Assignment1.cpp" />
+    <None Include="res\sprites\player.csv" />
+    <None Include="res\sprites\spore.csv" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -170,6 +173,7 @@
     <ClInclude Include="src\Sprites\Bullet.h" />
     <ClInclude Include="src\Sprites\Ghost.h" />
     <ClInclude Include="src\Sprites\Player.h" />
+    <ClInclude Include="src\Sprites\Spore.h" />
     <ClInclude Include="src\Sprites\Sprite.h" />
     <ClInclude Include="src\Sprites\SpriteLoader.h" />
   </ItemGroup>
