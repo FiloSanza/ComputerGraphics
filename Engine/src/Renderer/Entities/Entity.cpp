@@ -1,9 +1,9 @@
 #include "Entity.h"
 
 #include "../RendererUtils.h"
+#include "../../Geometry/Shapes.h"
 #include <algorithm>
 #include <iostream>
-
 
 namespace Engine {
 	Entity::Entity(
@@ -179,6 +179,53 @@ namespace Engine {
 
 	bool HittableEntity::hit(std::shared_ptr<Hittable> other) const {
 		return bounding_box.checkIntersection(other->getBoundingBox());
+	}
+
+	DynamicEntity::DynamicEntity(std::shared_ptr<VertexArray> vao, std::shared_ptr<VertexBuffer> vbo)
+	{
+		vertex_buffer = vbo;
+		vertex_array = vao;
+		model_matrix = std::make_shared<ModelMatrixHandler>();
+		vao->addVertexBuffer(vbo);
+	}
+
+	void DynamicEntity::draw()
+	{
+		RendererUtils::uploadUniformMat4("Model", model_matrix->getModelMatrix());
+		RendererUtils::uploadUniformMat4("Projection", projection_matrix);
+		RendererUtils::draw(vertex_array);
+	}
+
+	void DynamicEntity::bind()
+	{
+		vertex_array->bind();
+	}
+
+	void DynamicEntity::unbind()
+	{
+		vertex_array->unbind();
+	}
+
+	void DynamicEntity::setVertices(std::vector<float> vertices)
+	{
+		vertex_buffer->setVertices(vertices);
+	}
+
+	void DynamicEntity::setVertices(std::vector<glm::vec3> vertices)
+	{
+		vertex_buffer->setVertices(vertices);
+	}
+
+	void DynamicEntity::setVertices(std::vector<Engine::Vertex> vertices)
+	{
+		vertex_buffer->setVertices(vertices);
+	}
+
+	void DynamicEntity::setVertices(std::vector<Engine::TextureVertex> vertices)
+	{
+		vertex_array->bind();
+		vertex_buffer->setVertices(vertices);
+		vertex_array->unbind();
 	}
 
 }

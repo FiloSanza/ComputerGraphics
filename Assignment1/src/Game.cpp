@@ -9,13 +9,16 @@
 #include "Sprites/Spore.h"
 
 const float Game::PLAYER_MOVE_DELTA = 10;
-const char* Game::SPRITE_VERTEX_SHADER = "..\\Assignment1\\res\\shaders\\sprites.vert";
-const char* Game::SPRITE_FRAGMENT_SHADER = "..\\Assignment1\\res\\shaders\\sprites.frag";
-const char* Game::BACKGROUND_VERTEX_SHADER = "..\\Assignment1\\res\\shaders\\background.vert";
-const char* Game::BACKGROUND_FRAGMENT_SHADER = "..\\Assignment1\\res\\shaders\\background.frag";
+const char* Game::SPRITE_VERTEX_SHADER =		"..\\Assignment1\\res\\shaders\\sprites.vert";
+const char* Game::SPRITE_FRAGMENT_SHADER =		"..\\Assignment1\\res\\shaders\\sprites.frag";
+const char* Game::BACKGROUND_VERTEX_SHADER =	"..\\Assignment1\\res\\shaders\\background.vert";
+const char* Game::BACKGROUND_FRAGMENT_SHADER =	"..\\Assignment1\\res\\shaders\\background.frag";
+const char* Game::TEXT_VERTEX_SHADER =			"..\\Assignment1\\res\\shaders\\text.vert";
+const char* Game::TEXT_FRAGMENT_SHADER =		"..\\Assignment1\\res\\shaders\\text.frag";
+const char* Game::FONT_PATH =					"..\\Assignment1\\res\\fonts\\arial.ttf";
 
 Game::Game(std::shared_ptr<Engine::Window> window)
-	: window(window)
+	: window(window), score(0)
 {
 	const auto window_options = window->getOptions();
 
@@ -26,9 +29,12 @@ Game::Game(std::shared_ptr<Engine::Window> window)
 
 	background = Sprites::Background(background_ctx);
 	player = Sprites::Player(glm::vec3(window_options.world_width / 2, window_options.world_height / 2, 0), sprite_ctx);
+	auto txt_program = Engine::ShaderProgram(TEXT_VERTEX_SHADER, TEXT_FRAGMENT_SHADER);
+	txt_renderer = Engine::TextRenderer(FONT_PATH, std::make_shared<Engine::ShaderProgram>(txt_program));
+	txt_renderer.setProjectionMatrix(glm::ortho(0.0f, (float)window_options.world_width, 0.0f, (float)window_options.world_height));
 }
 
-void Game::draw() const
+void Game::draw()
 {
 	background_ctx->getShaderProgram()->bind();
 	background.draw();
@@ -65,6 +71,15 @@ void Game::draw() const
 	}
 
 	sprite_ctx->getShaderProgram()->unbind();
+	auto proj = glm::ortho(0.0f, (float)window->getOptions().world_width, 0.0f, (float)window->getOptions().world_height);
+	txt_renderer.setProjectionMatrix(proj);
+
+	std::string status = "";
+	if (!player.isActive()) {
+		status += "GAMEOVER: ";
+	}
+	status += "SCORE " + std::to_string(score);
+	txt_renderer.drawText(status, glm::vec4(0.5, 0.5, 0.5, 1.0), glm::vec3(0.0, 50.0, 0.0), glm::vec3(1.0));
 }
 
 void Game::shootBullet(float click_x, float click_y)
@@ -169,12 +184,18 @@ void Game::updateEnemies()
 	std::for_each(enemy_bullets.begin(), enemy_bullets.end(), update_enemy);
 
 	for (auto& enemy : ghosts) {
+		if (!enemy.isActive())
+			score++;
+
 		auto dir = player.getPos() - enemy.getPos();
 		enemy.setDirection(dir);
 		enemy.updateEntity();
 	}
 
 	for (auto& enemy : spores) {
+		if (!enemy.isActive())
+			score++;
+
 		enemy.updateEntity();
 	}
 }

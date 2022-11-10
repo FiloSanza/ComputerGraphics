@@ -18,3 +18,4 @@
 #include "src/Utils/GraphicContext.h"
 #include "src/Geometry/Hermite.h"
 #include "src/Geometry/Shapes.h"
+#include "src/Renderer/Text/TextRenderer.h"

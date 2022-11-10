@@ -75,6 +75,9 @@
     <ClInclude Include="src\Utils\GraphicContext.h">
       <Filter>File di intestazione</Filter>
     </ClInclude>
+    <ClInclude Include="src\Renderer\Text\TextRenderer.h">
+      <Filter>File di intestazione</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="src\Renderer\Buffer\VertexBuffer.cpp">
@@ -108,6 +111,9 @@
       <Filter>File di origine</Filter>
     </ClCompile>
     <ClCompile Include="src\Geometry\Shapes.cpp">
+      <Filter>File di origine</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Renderer\Text\TextRenderer.cpp">
       <Filter>File di origine</Filter>
     </ClCompile>
   </ItemGroup>

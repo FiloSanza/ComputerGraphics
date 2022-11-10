@@ -156,6 +156,7 @@
     <ClInclude Include="src\Renderer\Entities\Entity.h" />
     <ClInclude Include="src\Renderer\RendererUtils.h" />
     <ClInclude Include="src\Renderer\Shader\ShaderProgram.h" />
+    <ClInclude Include="src\Renderer\Text\TextRenderer.h" />
     <ClInclude Include="src\Utils\Files.h" />
     <ClInclude Include="src\Utils\GraphicContext.h" />
     <ClInclude Include="src\Utils\Input.h" />
@@ -171,6 +172,7 @@
     <ClCompile Include="src\Renderer\Entities\Entity.cpp" />
     <ClCompile Include="src\Renderer\RendererUtils.cpp" />
     <ClCompile Include="src\Renderer\Shader\ShaderProgram.cpp" />
+    <ClCompile Include="src\Renderer\Text\TextRenderer.cpp" />
     <ClCompile Include="src\Utils\Files.cpp" />
     <ClCompile Include="src\Utils\Window.cpp" />
   </ItemGroup>

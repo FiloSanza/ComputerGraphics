@@ -10,9 +10,10 @@ namespace Sprites {
 		: pos(pos), is_active(true), angle(0), context(context), life_points(1)
 	{
 		auto window_options = context->getWindow()->getOptions();
-		auto color = glm::vec4(0, 0, 1, 1.0);
+		auto color_center = glm::vec4(0, 0, 1, 1.0);
+		auto color_vertex = glm::vec4(0.678, 0.847, 1.0, 1.0);
 		auto points = SpriteLoader::load_sprite_coords(VERTEX_FILE);
-		auto vertices = Geometry::Hermite::interpIntoVertices(points, { OBJECT_CENTER, color }, color, 140);
+		auto vertices = Geometry::Hermite::interpIntoVertices(points, { OBJECT_CENTER, color_center }, color_vertex, 140);
 
 		auto vbo_obj = Engine::VertexBuffer::createStatic(vertices);
 		auto vertex_vbo = std::make_shared<Engine::VertexBuffer>(std::move(vbo_obj));

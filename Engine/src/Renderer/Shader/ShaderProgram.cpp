@@ -7,7 +7,7 @@
 #include <vector>
 
 namespace Engine {
-	ShaderProgram::ShaderProgram(std::string vertex_shader_path, std::string fragment_shader_path)
+	ShaderProgram::ShaderProgram(const std::string vertex_shader_path, const std::string fragment_shader_path)
 		: is_binded(false)
 	{
 		auto vertex_shader_id = ShaderProgram::compileShader(vertex_shader_path, ShaderType::VERTEX);
@@ -56,6 +56,12 @@ namespace Engine {
 	{
 		auto location = glGetUniformLocation(id, name.c_str());
 		glUniform2f(location, vec.x, vec.y);
+	}
+
+	void ShaderProgram::uploadUniformVec4(std::string name, glm::vec4 vec) const
+	{
+		auto location = glGetUniformLocation(id, name.c_str());
+		glUniform4f(location, vec.r, vec.g, vec.b, vec.a);
 	}
 
 	const ShaderProgram* ShaderProgram::getActiveInstance()

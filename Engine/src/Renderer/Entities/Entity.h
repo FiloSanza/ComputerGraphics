@@ -3,7 +3,9 @@
 #include <memory>
 
 #include "../../lib.h"
-#include "../../../engine.h"
+#include "../Buffer/VertexArray.h"
+#include "../Buffer/VertexBuffer.h"
+#include "../Shader/ShaderProgram.h"
 
 namespace Engine {
 	class ModelMatrixHandler {
@@ -65,14 +67,31 @@ namespace Engine {
 		Entity(
 			std::shared_ptr<VertexArray> vertex_array,
 			std::shared_ptr<ModelMatrixHandler> model_matrix,
-			glm::mat4 projection_matrix = glm::mat4()
+			glm::mat4 projection_matrix
 		);
 
 		std::shared_ptr<VertexArray> vertex_array;
-
 		glm::mat4 projection_matrix;
 		std::shared_ptr<ModelMatrixHandler> model_matrix;
 
+	};
+
+	class DynamicEntity : public Entity {
+	public:
+		DynamicEntity() {}
+		DynamicEntity(std::shared_ptr<VertexArray> vao, std::shared_ptr<VertexBuffer> vbo);
+
+		void draw();
+
+		void bind();
+		void unbind();
+		void setVertices(std::vector<float> vertices);
+		void setVertices(std::vector<glm::vec3> vertices);
+		void setVertices(std::vector<Engine::Vertex> vertices);
+		void setVertices(std::vector<Engine::TextureVertex> vertices);
+	protected:
+		std::shared_ptr<VertexArray> vertex_array;
+		std::shared_ptr<VertexBuffer> vertex_buffer;
 	};
 
 	class BoundingBox {

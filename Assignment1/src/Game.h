@@ -13,7 +13,7 @@ public:
 	Game() {}
 	Game(std::shared_ptr<Engine::Window> window);
 
-	void draw() const;
+	void draw();
 
 	void shootBullet(float click_x, float click_y);
 	void movePlayer();
@@ -27,12 +27,16 @@ private:
 	static const char* SPRITE_FRAGMENT_SHADER;
 	static const char* BACKGROUND_VERTEX_SHADER;
 	static const char* BACKGROUND_FRAGMENT_SHADER;
+	static const char* TEXT_VERTEX_SHADER;
+	static const char* TEXT_FRAGMENT_SHADER;
+	static const char* FONT_PATH;
 
 	void updateEnemies();
 	void updateBullets();
 	void deleteInactiveSprites();
 	void updateSpores();
 
+	uint32_t score;
 	Sprites::Player player;
 	Sprites::Background background;
 	std::vector<Sprites::Bullet> enemy_bullets;
@@ -40,6 +44,8 @@ private:
 	std::shared_ptr<Engine::Window> window;
 	std::vector<Sprites::Ghost> ghosts;
 	std::vector<Sprites::Spore> spores;
+
+	Engine::TextRenderer txt_renderer;
 	std::shared_ptr<Engine::GraphicContext> sprite_ctx;
 	std::shared_ptr<Engine::GraphicContext> background_ctx;
 };

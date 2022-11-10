@@ -32,6 +32,11 @@ namespace Engine {
 		glm::vec3 position;
 		glm::vec4 color;
 	};
+	
+	struct TextureVertex {
+		glm::vec3 position;
+		glm::vec2 texture_coord;
+	};
 
 	enum class DrawMode {
 		/**

@@ -11,7 +11,6 @@ constexpr int INITIAL_HEIGHT = 600;
 
 Game game;
 std::shared_ptr<Engine::Window> window;
-std::shared_ptr<Engine::ShaderProgram> shader_program;
 
 void drawScene() {
 	Engine::RendererUtils::clear(Engine::ClearOptions::ColorBuffer);
@@ -80,6 +79,8 @@ int main(int argc, char** argv)
 		game.shootBullet(world_coord.x, world_coord.y);
 	});
 	
+	Engine::RendererUtils::enableBlend();
+
 	Engine::RendererUtils::addTimerCallback(spawn_ghost, SPAWN_ENEMY_DELAY, 0);
 	Engine::RendererUtils::addTimerCallback(spawn_spore, SPAWN_ENEMY_DELAY + SPAWN_ENEMY_DELAY / 2, 0);
 	Engine::RendererUtils::addTimerCallback(step, STEP_DELAY, 0);

@@ -51,6 +51,8 @@
     </None>
     <None Include="res\sprites\player.csv" />
     <None Include="res\sprites\spore.csv" />
+    <None Include="res\shaders\text.vert" />
+    <None Include="res\shaders\text.frag" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Sprites\SpriteLoader.h">
