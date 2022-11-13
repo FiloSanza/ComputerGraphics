@@ -3,22 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.31624.102
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Triangle", "Triangle\Triangle.vcxproj", "{C713298F-47FF-408F-BB61-FCA03F31BBEF}"
-	ProjectSection(ProjectDependencies) = postProject
-		{623C9BE2-0555-40BD-9694-E5878263F9B0} = {623C9BE2-0555-40BD-9694-E5878263F9B0}
-	EndProjectSection
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Engine", "Engine\Engine.vcxproj", "{623C9BE2-0555-40BD-9694-E5878263F9B0}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Circle", "Circle\Circle.vcxproj", "{0346D994-4957-43DC-84B4-B7002FE1290D}"
-	ProjectSection(ProjectDependencies) = postProject
-		{623C9BE2-0555-40BD-9694-E5878263F9B0} = {623C9BE2-0555-40BD-9694-E5878263F9B0}
-	EndProjectSection
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ExampleScene", "ExampleScene\ExampleScene.vcxproj", "{C66A443E-4E64-43FA-AC02-EF5EBB78EFD2}"
-	ProjectSection(ProjectDependencies) = postProject
-		{623C9BE2-0555-40BD-9694-E5878263F9B0} = {623C9BE2-0555-40BD-9694-E5878263F9B0}
-	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Assignment1", "Assignment1\Assignment1.vcxproj", "{512EC6EB-D993-401A-A6D7-AF1B553A6186}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -33,14 +18,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{C713298F-47FF-408F-BB61-FCA03F31BBEF}.Debug|x64.ActiveCfg = Debug|x64
-		{C713298F-47FF-408F-BB61-FCA03F31BBEF}.Debug|x64.Build.0 = Debug|x64
-		{C713298F-47FF-408F-BB61-FCA03F31BBEF}.Debug|x86.ActiveCfg = Debug|Win32
-		{C713298F-47FF-408F-BB61-FCA03F31BBEF}.Debug|x86.Build.0 = Debug|Win32
-		{C713298F-47FF-408F-BB61-FCA03F31BBEF}.Release|x64.ActiveCfg = Release|x64
-		{C713298F-47FF-408F-BB61-FCA03F31BBEF}.Release|x64.Build.0 = Release|x64
-		{C713298F-47FF-408F-BB61-FCA03F31BBEF}.Release|x86.ActiveCfg = Release|Win32
-		{C713298F-47FF-408F-BB61-FCA03F31BBEF}.Release|x86.Build.0 = Release|Win32
 		{623C9BE2-0555-40BD-9694-E5878263F9B0}.Debug|x64.ActiveCfg = Debug|x64
 		{623C9BE2-0555-40BD-9694-E5878263F9B0}.Debug|x64.Build.0 = Debug|x64
 		{623C9BE2-0555-40BD-9694-E5878263F9B0}.Debug|x86.ActiveCfg = Debug|Win32
@@ -49,22 +26,6 @@ Global
 		{623C9BE2-0555-40BD-9694-E5878263F9B0}.Release|x64.Build.0 = Release|x64
 		{623C9BE2-0555-40BD-9694-E5878263F9B0}.Release|x86.ActiveCfg = Release|Win32
 		{623C9BE2-0555-40BD-9694-E5878263F9B0}.Release|x86.Build.0 = Release|Win32
-		{0346D994-4957-43DC-84B4-B7002FE1290D}.Debug|x64.ActiveCfg = Debug|x64
-		{0346D994-4957-43DC-84B4-B7002FE1290D}.Debug|x64.Build.0 = Debug|x64
-		{0346D994-4957-43DC-84B4-B7002FE1290D}.Debug|x86.ActiveCfg = Debug|Win32
-		{0346D994-4957-43DC-84B4-B7002FE1290D}.Debug|x86.Build.0 = Debug|Win32
-		{0346D994-4957-43DC-84B4-B7002FE1290D}.Release|x64.ActiveCfg = Release|x64
-		{0346D994-4957-43DC-84B4-B7002FE1290D}.Release|x64.Build.0 = Release|x64
-		{0346D994-4957-43DC-84B4-B7002FE1290D}.Release|x86.ActiveCfg = Release|Win32
-		{0346D994-4957-43DC-84B4-B7002FE1290D}.Release|x86.Build.0 = Release|Win32
-		{C66A443E-4E64-43FA-AC02-EF5EBB78EFD2}.Debug|x64.ActiveCfg = Debug|x64
-		{C66A443E-4E64-43FA-AC02-EF5EBB78EFD2}.Debug|x64.Build.0 = Debug|x64
-		{C66A443E-4E64-43FA-AC02-EF5EBB78EFD2}.Debug|x86.ActiveCfg = Debug|Win32
-		{C66A443E-4E64-43FA-AC02-EF5EBB78EFD2}.Debug|x86.Build.0 = Debug|Win32
-		{C66A443E-4E64-43FA-AC02-EF5EBB78EFD2}.Release|x64.ActiveCfg = Release|x64
-		{C66A443E-4E64-43FA-AC02-EF5EBB78EFD2}.Release|x64.Build.0 = Release|x64
-		{C66A443E-4E64-43FA-AC02-EF5EBB78EFD2}.Release|x86.ActiveCfg = Release|Win32
-		{C66A443E-4E64-43FA-AC02-EF5EBB78EFD2}.Release|x86.Build.0 = Release|Win32
 		{512EC6EB-D993-401A-A6D7-AF1B553A6186}.Debug|x64.ActiveCfg = Debug|x64
 		{512EC6EB-D993-401A-A6D7-AF1B553A6186}.Debug|x64.Build.0 = Debug|x64
 		{512EC6EB-D993-401A-A6D7-AF1B553A6186}.Debug|x86.ActiveCfg = Debug|Win32
